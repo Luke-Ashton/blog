@@ -1,12 +1,37 @@
 ---
-title: "blog"
-listing:
-  contents: posts
-  sort: "date desc"
-  type: default
-  categories: true
-  sort-ui: false
-  filter-ui: false
-page-layout: full
-title-block-banner: true
+title: "About"
+main-photo: images/Luke_Wollemia.jpg
+about:
+  template: jolla
+  links:
+    - icon: github
+      text: Github
+      href: https://github.com/Luke-Ashton
+    - icon: google  
+      text: Scholar
+      href: https://scholar.google.com/citations?user=2kSpXFEAAAAJ&hl=en
 ---
+
+::: grid
+::: {.g-col-12 .g-col-sm-4}
+```{=html}
+<div class="grid" style="--bs-columns: 5; row-gap: 0;">
+  <div class="g-col-1 g-col-sm-0"></div>
+  <div class="g-col-3 g-col-sm-5">
+    <picture>
+      <source media="(max-width: 576px)" srcset="{{< meta main-photo >}}">
+      <source media="(min-width: 576px)" srcset="{{< meta main-photo >}}">
+      <img class="img-fluid" src="{{< meta main-photo >}}" alt="{{< meta author-meta >}}">
+    </picture>
+  </div>
+  <div class="g-col-1 g-col-sm-0"></div>
+</div>
+```
+:::
+
+::: {.g-col-12 .g-col-sm-8}
+<br><br><br>
+
+I'm a PhD student at Macquarie University in Sydney, currently working on research investigating educational inequality in Australia.
+:::
+:::
