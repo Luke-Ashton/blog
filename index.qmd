@@ -10,6 +10,7 @@ about:
     - icon: google  
       text: Scholar
       href: https://scholar.google.com/citations?user=2kSpXFEAAAAJ&hl=en
+comments: false
 ---
 
 ::: grid
@@ -29,7 +30,7 @@ about:
 ```
 :::
 
-::: {.g-col-12 .g-col-sm-8}
+::: {.g-col-sm-8}
 <br><br><br>
 
 I'm a PhD student at Macquarie University in Sydney, currently working on research investigating educational inequality in Australia.
