@@ -1,6 +1,6 @@
 ---
 title: "About"
-image: Luke_Wollemia.jpg
+image: images/Luke_Wollemia.jpg
 about:
   template: jolla
   links:
