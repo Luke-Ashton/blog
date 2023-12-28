@@ -10,9 +10,9 @@
 <atom:link href="https://luke-ashton.netlify.app/blog.xml" rel="self" type="application/rss+xml"/>
 <description>This is Luke Ashton&#39;s personal blog.</description>
 <generator>quarto-1.3.433</generator>
-<lastBuildDate>Wed, 27 Dec 2023 13:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 28 Dec 2023 13:00:00 GMT</lastBuildDate>
 <item>
-  <title>Analysis of Strava data - and training load - in R.</title>
+  <title>Analysing Strava data in R.</title>
   <dc:creator>Luke Ashton</dc:creator>
   <link>https://luke-ashton.netlify.app/posts/strava-api-analysis/index.html</link>
   <description><![CDATA[ 
@@ -1261,46 +1261,37 @@ background-color: null;
 font-style: inherit;">theme</span>(</span>
 <span id="cb20-11">    <span class="at" style="color: #657422;
 background-color: null;
-font-style: inherit;">text =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">family =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Consolas"</span>),</span>
-<span id="cb20-12">    <span class="at" style="color: #657422;
-background-color: null;
 font-style: inherit;">legend.position =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"none"</span>,</span>
-<span id="cb20-13">    <span class="at" style="color: #657422;
+<span id="cb20-12">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">legend.title =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">element_blank</span>()</span>
-<span id="cb20-14">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb20-13">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> </span>
-<span id="cb20-15">  <span class="fu" style="color: #4758AB;
+<span id="cb20-14">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Weekly training load (TRIMPexp) over the years"</span>,</span>
-<span id="cb20-16">       <span class="at" style="color: #657422;
+<span id="cb20-15">       <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Week of the year"</span>,</span>
-<span id="cb20-17">       <span class="at" style="color: #657422;
+<span id="cb20-16">       <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Weekly training load"</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> </span>
-<span id="cb20-18">  <span class="fu" style="color: #4758AB;
+<span id="cb20-17">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -1429,52 +1420,43 @@ background-color: null;
 font-style: inherit;">theme</span>(</span>
 <span id="cb21-15">    <span class="at" style="color: #657422;
 background-color: null;
-font-style: inherit;">text =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">family =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Consolas"</span>),</span>
-<span id="cb21-16">    <span class="at" style="color: #657422;
-background-color: null;
 font-style: inherit;">legend.position =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"none"</span>,</span>
-<span id="cb21-17">    <span class="at" style="color: #657422;
+<span id="cb21-16">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">legend.title =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">element_blank</span>()</span>
-<span id="cb21-18">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb21-17">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> </span>
-<span id="cb21-19">  <span class="fu" style="color: #4758AB;
+<span id="cb21-18">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Weekly TRIMP across 2018 and 2019"</span>,</span>
-<span id="cb21-20">       <span class="at" style="color: #657422;
+<span id="cb21-19">       <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Week of the year"</span>,</span>
-<span id="cb21-21">       <span class="at" style="color: #657422;
+<span id="cb21-20">       <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Weekly training load"</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> </span>
-<span id="cb21-22">  <span class="fu" style="color: #4758AB;
+<span id="cb21-21">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">~</span> year)</span>
-<span id="cb21-23"></span>
-<span id="cb21-24">plot_trimp</span></code></pre></div>
+<span id="cb21-22"></span>
+<span id="cb21-23">plot_trimp</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="https://luke-ashton.netlify.app/posts/strava-api-analysis/index_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
@@ -1596,52 +1578,43 @@ background-color: null;
 font-style: inherit;">theme</span>(</span>
 <span id="cb22-16">    <span class="at" style="color: #657422;
 background-color: null;
-font-style: inherit;">text =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">family =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Consolas"</span>),</span>
-<span id="cb22-17">    <span class="at" style="color: #657422;
-background-color: null;
 font-style: inherit;">legend.position =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"none"</span>,</span>
-<span id="cb22-18">    <span class="at" style="color: #657422;
+<span id="cb22-17">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">legend.title =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">element_blank</span>()</span>
-<span id="cb22-19">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb22-18">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> </span>
-<span id="cb22-20">  <span class="fu" style="color: #4758AB;
+<span id="cb22-19">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Average weekly speed of runs across 2018 and 2019"</span>,</span>
-<span id="cb22-21">  <span class="at" style="color: #657422;
+<span id="cb22-20">  <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Week of the year"</span>,</span>
-<span id="cb22-22">  <span class="at" style="color: #657422;
+<span id="cb22-21">  <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Weekly average speed (km/h)"</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb22-23">  <span class="fu" style="color: #4758AB;
+<span id="cb22-22">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">~</span> year)</span>
-<span id="cb22-24"></span>
-<span id="cb22-25">plot_speed</span></code></pre></div>
+<span id="cb22-23"></span>
+<span id="cb22-24">plot_speed</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="https://luke-ashton.netlify.app/posts/strava-api-analysis/index_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
@@ -1651,7 +1624,9 @@ font-style: inherit;">~</span> year)</span>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1">plot_trimp <span class="sc" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1">combined_plot <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> plot_trimp <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> plot_speed <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -1661,18 +1636,33 @@ font-style: inherit;">plot_layout</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">ncol =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">1</span>)</span></code></pre></div>
+font-style: inherit;">1</span>)</span>
+<span id="cb23-2"></span>
+<span id="cb23-3">combined_plot</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <p><img src="https://luke-ashton.netlify.app/posts/strava-api-analysis/index_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
 </div>
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Let's save this to use as the image for the post! </span></span>
+<span id="cb24-2"></span>
+<span id="cb24-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ggsave(combined_plot, file = "images/combined_plot.png",</span></span>
+<span id="cb24-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#        height = 6, width = 8, units = "in")</span></span></code></pre></div>
+</details>
 </div>
-<p>Not bad. While there’s plenty more analysis to undertake, this post is already much longer than anticipated due to the challenges of working with the Strava API, so I think I’ll leave it here for now and dive into this data in more detail later.</p>
+<p>Not bad. While there’s plenty more analysis to undertake, this post is already much longer than anticipated due to the intricacies of working with the Strava API, so I think I’ll leave it here for now and dive into this data in more detail later.</p>
 </section>
 <section id="takeaways-goals-for-the-new-year" class="level2">
 <h2 class="anchored" data-anchor-id="takeaways-goals-for-the-new-year">Takeaways &amp; goals for the New Year</h2>
-<p>So, it’s clear that I’ve been terribly inconsistent with my aerobic training. However, I don’t record data for my resistance training anymore, so there’s no way to tell how inconsistent I’ve been with that.</p>
-<p>For 2024, I have ideas of an ironman distance triathlon and my first 100 miler run floating around in my mind, but let’s start with the basics: consistency.</p>
+<p>So, it’s clear that I’ve been terribly inconsistent with my aerobic training. However, I don’t record data for my resistance training anymore, so there’s no way to tell how inconsistent I’ve been with that. Although, I’ve probably been training with weights, on average, twice per week for the past few years.</p>
+<p>For 2024, I have ideas of an ironman distance triathlon and my first 100 miler run floating around in my mind, but let’s start with the basics: consistency. Perhaps 3 resistance training sessions per week and building up to a few hours of aerobic training each week across some runs, a cycle, and a swim.</p>
 
 
 
@@ -1697,14 +1687,14 @@ Morton, R Hugh, John R Fitz-Clarke, and Eric W Banister. 1990. <span>“Modeling
 </ol>
 </section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{ashton2023,
   author = {Ashton, Luke},
-  title = {Analysis of {Strava} Data - and Training Load - in {R.}},
-  date = {2023-12-28},
+  title = {Analysing {Strava} Data in {R.}},
+  date = {2023-12-29},
   url = {https://luke-ashton.netlify.app/posts/strava-api-analysis},
   langid = {en}
 }
 </code></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-ashton2023" class="csl-entry quarto-appendix-citeas">
-Ashton, Luke. 2023. <span>“Analysis of Strava Data - and Training Load -
-in R.”</span> December 28, 2023. <a href="https://luke-ashton.netlify.app/posts/strava-api-analysis">https://luke-ashton.netlify.app/posts/strava-api-analysis</a>.
+Ashton, Luke. 2023. <span>“Analysing Strava Data in R.”</span> December
+29, 2023. <a href="https://luke-ashton.netlify.app/posts/strava-api-analysis">https://luke-ashton.netlify.app/posts/strava-api-analysis</a>.
 </div></div></section></div> ]]></description>
   <category>R</category>
   <category>Data analysis</category>
@@ -1712,8 +1702,8 @@ in R.”</span> December 28, 2023. <a href="https://luke-ashton.netlify.app/post
   <category>Strava</category>
   <category>Sports statistics</category>
   <guid>https://luke-ashton.netlify.app/posts/strava-api-analysis/index.html</guid>
-  <pubDate>Wed, 27 Dec 2023 13:00:00 GMT</pubDate>
-  <media:content url="https://luke-ashton.netlify.app/posts/strava-api-analysis/images/request_limits_ugh.png" medium="image" type="image/png" height="17" width="144"/>
+  <pubDate>Thu, 28 Dec 2023 13:00:00 GMT</pubDate>
+  <media:content url="https://luke-ashton.netlify.app/posts/strava-api-analysis/images/combined_plot.png" medium="image" type="image/png" height="108" width="144"/>
 </item>
 </channel>
 </rss>
