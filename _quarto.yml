@@ -3,16 +3,19 @@ project:
 
 website:
   title: "Luke Ashton"
-  site-url: https://musingsofaphdstudent.netlify.app/
+  site-url: https://luke-ashton.netlify.app
   description: "This is Luke Ashton's personal blog."
   navbar:
-    right:
+    left: 
       - text: Blog
         href: blog.qmd
+    right:
       - icon: github
         href: https://github.com/Luke-Ashton
       - icon: google
         href: https://scholar.google.com/citations?user=2kSpXFEAAAAJ&hl=en
+      - icon: strava
+        href: https://www.strava.com/athletes/31921497
       - icon: rss
         href: blog.xml
 format:

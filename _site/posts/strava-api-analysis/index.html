@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Luke Ashton">
+<meta name="dcterms.date" content="2023-12-28">
+<meta name="description" content="A mediocre runner wrangles data through the Strava API.">
+
+<title>Luke Ashton - Analysis of Strava data - and training load - in R.</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta name="citation_title" content="Analysis of Strava data - and training load - in R.">
+<meta name="citation_author" content="Luke Ashton">
+<meta name="citation_publication_date" content="2023-12-28">
+<meta name="citation_cover_date" content="2023-12-28">
+<meta name="citation_year" content="2023">
+<meta name="citation_online_date" content="2023-12-28">
+<meta name="citation_fulltext_html_url" content="https://luke-ashton.netlify.app/posts/strava-api-analysis">
+<meta name="citation_language" content="en">
+<meta name="citation_reference" content="citation_title=Modeling human performance in running;,citation_author=R Hugh Morton;,citation_author=John R Fitz-Clarke;,citation_author=Eric W Banister;,citation_publication_date=1990;,citation_cover_date=1990;,citation_year=1990;,citation_issue=3;,citation_volume=69;,citation_journal_title=Journal of applied physiology;">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Luke Ashton</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../blog.html" rel="" target="">
+ <span class="menu-text">Blog</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/Luke-Ashton" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://scholar.google.com/citations?user=2kSpXFEAAAAJ&amp;hl=en" rel="" target=""><i class="bi bi-google" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.strava.com/athletes/31921497" rel="" target=""><i class="bi bi-strava" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../blog.xml" rel="" target=""><i class="bi bi-rss" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Analysis of Strava data - and training load - in R.</h1>
+                  <div>
+        <div class="description">
+          A mediocre runner wrangles data through the Strava API.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">R</div>
+                <div class="quarto-category">Data analysis</div>
+                <div class="quarto-category">Tutorial</div>
+                <div class="quarto-category">Strava</div>
+                <div class="quarto-category">Sports statistics</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Luke Ashton </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">December 28, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#inspiration" id="toc-inspiration" class="nav-link" data-scroll-target="#inspiration">Inspiration</a></li>
+  <li><a href="#loading-libraries-and-registering-for-the-api" id="toc-loading-libraries-and-registering-for-the-api" class="nav-link" data-scroll-target="#loading-libraries-and-registering-for-the-api">Loading libraries and registering for the API</a></li>
+  <li><a href="#aggregated-activity-data" id="toc-aggregated-activity-data" class="nav-link" data-scroll-target="#aggregated-activity-data">Aggregated activity data</a></li>
+  <li><a href="#activity-level-data" id="toc-activity-level-data" class="nav-link" data-scroll-target="#activity-level-data">Activity-level data</a></li>
+  <li><a href="#wrangling-and-tidying-the-data" id="toc-wrangling-and-tidying-the-data" class="nav-link" data-scroll-target="#wrangling-and-tidying-the-data">Wrangling and tidying the data</a></li>
+  <li><a href="#api-request-limits" id="toc-api-request-limits" class="nav-link" data-scroll-target="#api-request-limits">API Request limits</a></li>
+  <li><a href="#creating-a-measure-of-training-load" id="toc-creating-a-measure-of-training-load" class="nav-link" data-scroll-target="#creating-a-measure-of-training-load">Creating a measure of training load!</a></li>
+  <li><a href="#plotting-our-data" id="toc-plotting-our-data" class="nav-link" data-scroll-target="#plotting-our-data">Plotting our data</a></li>
+  <li><a href="#takeaways-goals-for-the-new-year" id="toc-takeaways-goals-for-the-new-year" class="nav-link" data-scroll-target="#takeaways-goals-for-the-new-year">Takeaways &amp; goals for the New Year</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>With most of Australia closed between Christmas and New Years, I’ve found myself with some free time. This time for reflection has allowed me to consider potential goals for the coming year and, more importantly, my blasé attitude towards my physical health in the past year. <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>I’ve always enjoyed having some physical goals for the year ahead, and some recent family health problems have reminded me of significance of prioritising one’s physical health.</p>
+<p>However, before setting specific goals I like to review my past training to help me understand where to start and how to map out the process of getting into better shape.</p>
+<p>So, being the nerd that I am, I thought it would be fun to pull my running data from Strava using their API. Before getting started with this mini-project, I noticed that there wasn’t a clear pathway for R-users to obtain activity-level data from the Strava API in bulk - so hopefully this is useful to someone at some point! I am also somewhat underwhelmed by the analytic capabilities of the Strava app - especially if someone doesn’t want to pay $15/month in subscription fees!</p>
+</section>
+<section id="inspiration" class="level2">
+<h2 class="anchored" data-anchor-id="inspiration">Inspiration</h2>
+<p>Before moving forward I want to acknowledge that part of my motivation for re-engaging with the Strava API comes from <a href="https://ikashnitsky.phd/">Ilya Kashnitsky’s</a> beautiful heatmap, pictured below. He created it by taking aggregate-level polylines from each of his activities and plotting them on an inset map - pretty cool and the code for it can be found <a href="https://github.com/ikashnitsky/30DayMapChallenge/blob/main/src/20-outdoors-strava.R">here</a>!</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/ikashnitsky_strava_map.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">A really cool colour-inverted heatmap from Ilya’s Strava runs!</figcaption>
+</figure>
+</div>
+</section>
+<section id="loading-libraries-and-registering-for-the-api" class="level2">
+<h2 class="anchored" data-anchor-id="loading-libraries-and-registering-for-the-api">Loading libraries and registering for the API</h2>
+<p>Back to the task at hand, though! First, we’ll need to load the following libraries which will form the foundation for most of our wrangling and analysis.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A gentle reminder to call install.packages("package_name_here") if you don't have any of these installed already!</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rStrava) </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Now, to access the Strava API. For this, you will need to register for this ‘service’ <a href="https://www.strava.com/settings/api">here</a> <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+<p>Once you’ve done this, you will be prompted to name your app and to provide a website URL for it. For the URL, I just used my Strava athlete profile <a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. After inputting this information, you should be directed to a page with your ‘client id’ and your ‘client secret’ - these are both necessary for accessing the API and, Strava reminds you, shouldn’t be shared with anyone!</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>app_name <span class="ot">&lt;-</span> <span class="st">"Put your app name here"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>client_id <span class="ot">&lt;-</span> <span class="st">"Put your client id here"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>client_secret <span class="ot">&lt;-</span> <span class="st">"Put your client secret here"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Then, with this information we can create an API request! I’ll first create an object that we can call any time we need to make a request.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>stoken <span class="ot">&lt;-</span> httr<span class="sc">::</span><span class="fu">config</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">token =</span> <span class="fu">strava_oauth</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    app_name, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    client_id, </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    client_secret, </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">app_scope =</span> <span class="st">"activity:read_all"</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">cache =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="aggregated-activity-data" class="level2">
+<h2 class="anchored" data-anchor-id="aggregated-activity-data">Aggregated activity data</h2>
+<p>However, one limitation of the standard API and the RStrava package is that most of the simpler functions only provide aggregated activity data. For instance, the following code creates an activity list with some topline stats from the 412 activities I’ve logged with Strava.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>activity.list <span class="ot">&lt;-</span> stoken <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">get_activity_list</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compile_activities</span>()</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(activity.list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["achievement_count"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["athlete.id"],"name":[2],"type":["chr"],"align":["left"]},{"label":["athlete.resource_state"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["athlete_count"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["average_speed"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["comment_count"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["commute"],"name":[7],"type":["chr"],"align":["left"]},{"label":["display_hide_heartrate_option"],"name":[8],"type":["chr"],"align":["left"]},{"label":["distance"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["elapsed_time"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["elev_high"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["elev_low"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["end_latlng1"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["end_latlng2"],"name":[14],"type":["dbl"],"align":["right"]},{"label":["external_id"],"name":[15],"type":["chr"],"align":["left"]},{"label":["flagged"],"name":[16],"type":["chr"],"align":["left"]},{"label":["from_accepted_tag"],"name":[17],"type":["chr"],"align":["left"]},{"label":["gear_id"],"name":[18],"type":["chr"],"align":["left"]},{"label":["has_heartrate"],"name":[19],"type":["chr"],"align":["left"]},{"label":["has_kudoed"],"name":[20],"type":["chr"],"align":["left"]},{"label":["heartrate_opt_out"],"name":[21],"type":["chr"],"align":["left"]},{"label":["id"],"name":[22],"type":["dbl"],"align":["right"]},{"label":["kudos_count"],"name":[23],"type":["dbl"],"align":["right"]},{"label":["location_country"],"name":[24],"type":["chr"],"align":["left"]},{"label":["manual"],"name":[25],"type":["chr"],"align":["left"]},{"label":["map.id"],"name":[26],"type":["chr"],"align":["left"]},{"label":["map.resource_state"],"name":[27],"type":["dbl"],"align":["right"]},{"label":["map.summary_polyline"],"name":[28],"type":["chr"],"align":["left"]},{"label":["max_speed"],"name":[29],"type":["dbl"],"align":["right"]},{"label":["moving_time"],"name":[30],"type":["dbl"],"align":["right"]},{"label":["name"],"name":[31],"type":["chr"],"align":["left"]},{"label":["photo_count"],"name":[32],"type":["dbl"],"align":["right"]},{"label":["pr_count"],"name":[33],"type":["chr"],"align":["left"]},{"label":["private"],"name":[34],"type":["chr"],"align":["left"]},{"label":["resource_state"],"name":[35],"type":["dbl"],"align":["right"]},{"label":["sport_type"],"name":[36],"type":["chr"],"align":["left"]},{"label":["start_date"],"name":[37],"type":["chr"],"align":["left"]},{"label":["start_date_local"],"name":[38],"type":["chr"],"align":["left"]},{"label":["start_latlng1"],"name":[39],"type":["dbl"],"align":["right"]},{"label":["start_latlng2"],"name":[40],"type":["dbl"],"align":["right"]},{"label":["timezone"],"name":[41],"type":["chr"],"align":["left"]},{"label":["total_elevation_gain"],"name":[42],"type":["dbl"],"align":["right"]},{"label":["total_photo_count"],"name":[43],"type":["dbl"],"align":["right"]},{"label":["trainer"],"name":[44],"type":["chr"],"align":["left"]},{"label":["type"],"name":[45],"type":["chr"],"align":["left"]},{"label":["upload_id"],"name":[46],"type":["chr"],"align":["left"]},{"label":["upload_id_str"],"name":[47],"type":["chr"],"align":["left"]},{"label":["utc_offset"],"name":[48],"type":["chr"],"align":["left"]},{"label":["visibility"],"name":[49],"type":["chr"],"align":["left"]},{"label":["average_cadence"],"name":[50],"type":["chr"],"align":["left"]},{"label":["average_heartrate"],"name":[51],"type":["chr"],"align":["left"]},{"label":["average_temp"],"name":[52],"type":["chr"],"align":["left"]},{"label":["average_watts"],"name":[53],"type":["dbl"],"align":["right"]},{"label":["device_watts"],"name":[54],"type":["chr"],"align":["left"]},{"label":["kilojoules"],"name":[55],"type":["dbl"],"align":["right"]},{"label":["max_heartrate"],"name":[56],"type":["chr"],"align":["left"]},{"label":["workout_type"],"name":[57],"type":["chr"],"align":["left"]}],"data":[{"1":"0","2":"31921497","3":"1","4":"1","5":"4.4424","6":"0","7":"FALSE","8":"FALSE","9":"3.3523","10":"2767","11":"126.5","12":"85.3","13":"-33.71870","14":"151.1500","15":"97FC79F1-0AF9-408C-8620-E057A55327E5-activity.fit","16":"FALSE","17":"FALSE","18":"g14059828","19":"FALSE","20":"FALSE","21":"FALSE","22":"10448718656","23":"0","24":"Australia","25":"FALSE","26":"a10448718656","27":"2","28":"htxlEonpy[@FB?BBJGR@d@Wn@?BEB@HI@IKIO@GCIO@KCSISIE[KK@KEE@]IMKIAAEG?MIQAECWQ?KMSEQEc@CEA_@@G?KCG@ESk@C_@CCGMIGM?IEOOGAW]YSIUICKKMGe@CI@UE?CA?CGEAGOYMSACBUBSTGAIHM?OKGQWc@MGSSG?CEM]?]Oc@UIQCIKGKUKQAECI?ACICUOo@HIE_@FKEQ?E@MAIC_@q@IAAGEAKAYNK@KFUDK?C@I@GBUOU?EIa@CECG@_@GIBG?MEKK]CGEU@OE_@CGBMA_@DOAIE?IKI?EGGKIE?CGIAe@DWAo@NIHWB_@VG@UJOCK@e@GICIICYI[CAWCQGQBO@UKIASDSE_@?M@MFM?MGQAKGI@EEUC?AC@GCBDLDFJ^FBBB?^NB?BGZSLAZ@LKJC\\\\JPJNAPDJEFBLPFJ@NFHBAPHP?FHNFFANOT@NABENC\\\\MVQR?TQVAFBLJPHDFd@VP?DCNBTCV@L?RHDBZ@HLLGP?JFD?L@^PJCHDHJJ@RCXBPEPMj@GLL\\\\DRRDPD?HN@AFDHCNORGTBNAf@LN@PHNLNBBCHFD@VPLPTBTZNn@@VLLJDh@t@PJPXHBP?JGPODOHGRGLHVZ?DHHPLPCTBVJDHB?LLRJHPRLBHLPJBNPFBNLN\\\\?LHd@@XDJBf@ADF^BHBBJTD@RIXN@@NBTLDARJVDJHNBVHHFFNAPHVJNTJ@FEFG@W@KAIFQBOJS@KE","29":"10.6740","30":"2717","31":"COVID walk with Nani","32":"0","33":"0","34":"FALSE","35":"2","36":"Walk","37":"2023-12-28T06:56:34Z","38":"2023-12-28T17:56:34Z","39":"-33.71860","40":"151.1500","41":"(GMT+10:00) Australia/Sydney","42":"54.4","43":"0","44":"FALSE","45":"Walk","46":"11182369841","47":"11182369841","48":"39600","49":"everyone","50":"NA","51":"NA","52":"NA","53":"NA","54":"NA","55":"NA","56":"NA","57":"NA","_rn_":"1"},{"1":"4","2":"31921497","3":"1","4":"1","5":"10.1556","6":"0","7":"FALSE","8":"FALSE","9":"10.0859","10":"3601","11":"169.7","12":"85.3","13":"-33.71714","14":"151.1527","15":"AAF9D3E6-421B-4D8F-9E07-7C7748812273-activity.fit","16":"FALSE","17":"FALSE","18":"g14059828","19":"FALSE","20":"FALSE","21":"FALSE","22":"10436921535","23":"0","24":"Australia","25":"FALSE","26":"a10436921535","27":"2","28":"`uxlEsnpy[LD^En@S\\\\?HMCKi@[GQEYGKo@Yc@IcA]c@WSQOe@EcAOiAMUYQiBaBa@Qi@Aq@o@KGQAOB]\\\\OBMEc@k@{@{@KOGc@Uc@QOOE[Y_@K[Ui@O_ABu@HSIWe@UOa@CWFUPk@?aA]S@yAYuACo@SWA[Qg@OeAZOBSHa@DOJa@F[?gA_@Qi@MQUC[Be@EsAL_@AYA_@Qi@EkAU]Wm@SIIi@w@}@wBa@UGKEe@@YE]UGQBKJKTq@`@_@HcCQMECEM_@Gg@Uq@UUOEe@A[E[a@a@[s@uAIQBGn@RXf@HBXRh@HrAE`A\\\\R?XMVEd@[j@Un@g@HSTO^Gf@DLE`A?fBNvBFvBx@lATRHL?\\\\Pr@z@z@R~@Jd@CRGLS@k@DUNqD?UFi@B_ADUAq@ESKOs@c@[w@eBqAWQIA_Aw@{@cBOQIUKu@i@m@QYm@sAc@e@o@c@qAoAa@Q]WY_@iAg@{Cg@wCu@_AKmC?sDa@kB@qBWWBm@E[B}@GgAOqAc@m@Ia@Qm@KsAk@i@[iB_@[Ea@UQE_AISMKWXXbAN~@X`AHlA`@nAl@v@Rv@f@b@Bd@LNLHh@@r@Av@w@`HCtAC^CFGY?e@RcBBaAVmAFkBHc@@c@DUFIf@@h@EdANt@A|AHf@A`@HnAJZ?`@FrADh@Hp@BzA?v@Fl@Tt@HbDx@n@JdAb@x@v@VLjAdAl@^lAxAVp@f@|@n@dBdA~ARLNT^JXd@b@Xh@Vh@n@l@Vl@j@JVKfC@NSdBKrAEvAMVi@LmAGq@Oc@Q]k@MMu@Mq@[uBs@c@EkDEoAQaAC_@Nu@p@}@`@]Fq@V[V[FGC_@[MEY?aAJQCc@Wm@q@SIYC@Nl@bAx@bANJv@DRNb@f@J`@Fh@FTLJTLvABVIh@a@\\\\e@JEb@?XZHn@DHVf@b@b@l@bABTh@~@LLb@Pn@`@hATdA^`@@rAO`@Fv@?LLPf@FFrARd@En@OPMj@Kv@Eh@PVRt@Cd@B^Ar@LZNrAFj@L\\\\CLBn@KXALDDHb@\\\\FLPFpAO^Dp@Xn@d@TFb@TV\\\\BNTl@JHjApAXFp@[\\\\B~@p@RH`@BVV","29":"15.6744","30":"3575","31":"Aaaand I have COVID","32":"0","33":"1","34":"FALSE","35":"2","36":"TrailRun","37":"2023-12-26T03:20:44Z","38":"2023-12-26T14:20:44Z","39":"-33.71872","40":"151.1500","41":"(GMT+10:00) Australia/Sydney","42":"154.1","43":"0","44":"FALSE","45":"Run","46":"11170114338","47":"11170114338","48":"39600","49":"everyone","50":"NA","51":"NA","52":"NA","53":"NA","54":"NA","55":"NA","56":"NA","57":"0","_rn_":"2"},{"1":"0","2":"31921497","3":"1","4":"1","5":"8.8884","6":"0","7":"FALSE","8":"FALSE","9":"1.0023","10":"448","11":"118.0","12":"85.3","13":"-33.71783","14":"151.1520","15":"9ED2688F-655C-4F5C-B731-26A44FF4C922-activity.fit","16":"FALSE","17":"FALSE","18":"g14059828","19":"FALSE","20":"FALSE","21":"FALSE","22":"10432812925","23":"0","24":"Australia","25":"FALSE","26":"a10432812925","27":"2","28":"j{vlEelqy[F@FMN?DB`@LJEl@i@TANGHIHE\\\\?`@IN?VHn@h@F@rAKH@DB\\\\B`@Hr@FRJp@HLDL@n@Tf@WJONGHDBAJBh@v@PPF@TIZGf@GP?PDj@XF?TPN@`@ZTJNNLRNn@TZj@h@HTNNJFJ?HAROLQj@Bj@t@TFf@@JDfAhAd@XLNPVL`@","29":"16.6068","30":"406","31":"Afternoon Trail Run","32":"0","33":"0","34":"FALSE","35":"2","36":"TrailRun","37":"2023-12-25T03:56:58Z","38":"2023-12-25T14:56:58Z","39":"-33.70950","40":"151.1548","41":"(GMT+10:00) Australia/Sydney","42":"35.2","43":"0","44":"FALSE","45":"Run","46":"11165803755","47":"11165803755","48":"39600","49":"everyone","50":"NA","51":"NA","52":"NA","53":"NA","54":"NA","55":"NA","56":"NA","57":"0","_rn_":"3"},{"1":"0","2":"31921497","3":"1","4":"1","5":"12.5352","6":"0","7":"FALSE","8":"FALSE","9":"3.0675","10":"881","11":"126.5","12":"85.3","13":"-33.70805","14":"151.1553","15":"C64E3F45-3D44-47F6-8184-9A9E5FA2D42A-activity.fit","16":"FALSE","17":"FALSE","18":"g14059828","19":"FALSE","20":"FALSE","21":"FALSE","22":"10432803321","23":"0","24":"Australia","25":"FALSE","26":"a10432803321","27":"2","28":"luxlEanpy[ZAj@[f@CDE?Kg@UMq@IKMAa@Um@Si@WWEYKWUKiAA_@Ik@Qm@m@y@OMc@UYWWQkAK[c@e@WS?_@`@QBQAGEUa@e@m@OIQQIs@QYiAw@]Ks@a@WA[Aa@BYLM@QIS[[SE@QEe@HQFQ@_@EW?[OUC_@?a@Ic@OSCO@YA_AO[Aa@SSEy@Bc@REAYDa@Vg@LUC{@SWMCEAUEOa@KOAYB_@CWD[Ae@F{@AKIi@Si@aAqBoBQi@AM@SGWMQQMG[Q]Qw@EY@i@?EHQJMCGGCUE[?[HYFKD[Hm@f@g@T}@?KEQYO_@EYe@g@e@K_@DSDy@?c@_@OYc@YG?MGf@hAJF\\\\b@TPPVLFVFd@D`@ZDJJ`@Hl@B\\\\@DDBPFj@J\\\\CPBRCTKLOJGh@q@ZKTBHFLVHf@JXLLRLJLn@xBP`@TZt@`@`AVRJbARL?","29":"18.4032","30":"881","31":"Afternoon Trail Run","32":"0","33":"0","34":"FALSE","35":"2","36":"TrailRun","37":"2023-12-25T03:39:49Z","38":"2023-12-25T14:39:49Z","39":"-33.71879","40":"151.1499","41":"(GMT+10:00) Australia/Sydney","42":"39.8","43":"0","44":"FALSE","45":"Run","46":"11165793337","47":"11165793337","48":"39600","49":"everyone","50":"NA","51":"NA","52":"NA","53":"NA","54":"NA","55":"NA","56":"NA","57":"0","_rn_":"4"},{"1":"0","2":"31921497","3":"1","4":"1","5":"2.9988","6":"0","7":"FALSE","8":"FALSE","9":"12.0000","10":"14400","11":"NA","12":"NA","13":"NA","14":"NA","15":"NA","16":"FALSE","17":"FALSE","18":"g14059828","19":"FALSE","20":"FALSE","21":"FALSE","22":"10432438711","23":"0","24":"Australia","25":"TRUE","26":"a10432438711","27":"2","28":"","29":"0.0000","30":"14400","31":"Walk around the city w/ Ari & Shreedhar","32":"0","33":"0","34":"FALSE","35":"2","36":"Walk","37":"2023-12-24T02:00:00Z","38":"2023-12-24T13:00:00Z","39":"NA","40":"NA","41":"(GMT+10:00) Australia/Sydney","42":"100.0","43":"0","44":"FALSE","45":"Walk","46":"NA","47":"NA","48":"39600","49":"everyone","50":"NA","51":"NA","52":"NA","53":"NA","54":"NA","55":"NA","56":"NA","57":"NA","_rn_":"5"},{"1":"0","2":"31921497","3":"1","4":"1","5":"2.8008","6":"0","7":"FALSE","8":"FALSE","9":"14.0000","10":"18000","11":"NA","12":"NA","13":"NA","14":"NA","15":"NA","16":"FALSE","17":"FALSE","18":"g14059828","19":"FALSE","20":"FALSE","21":"FALSE","22":"10432437449","23":"0","24":"Australia","25":"TRUE","26":"a10432437449","27":"2","28":"","29":"0.0000","30":"18000","31":"Hike w/ Ari, Claire, and Shreedhar @ RNP","32":"0","33":"0","34":"FALSE","35":"2","36":"Hike","37":"2023-12-23T00:30:00Z","38":"2023-12-23T11:30:00Z","39":"NA","40":"NA","41":"(GMT+10:00) Australia/Sydney","42":"300.0","43":"0","44":"FALSE","45":"Hike","46":"NA","47":"NA","48":"39600","49":"everyone","50":"NA","51":"NA","52":"NA","53":"NA","54":"NA","55":"NA","56":"NA","57":"NA","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>While it’s interesting to see items like the achievement count, average speed, and average heart rate for each activity, this information may not help us get an accurate measure of training load. One of the more well-known measures of training load is the TRIMP (training impulse) value, which estimates training load by multiplying the number of minutes the activity took by the average heart rate during it.</p>
+<p>To get a better intuition for why I believe activity-level data to be important for measuring training load, consider two workouts: one a high-intensity sprint session focusing on 400m intervals with a long recovery; the other a typical easy ‘Zone 2’ aerobic workout. These two workouts could, in theory, be of the same duration, cover the same amount of distance, and even end up having similar average heart rates - but their training effects, and subsequently the toll they take on the body, are markedly different.</p>
+<p>Therefore, I want activity-level data - which is typically collected at the interval of 1 second from most sports watches.</p>
+</section>
+<section id="activity-level-data" class="level2">
+<h2 class="anchored" data-anchor-id="activity-level-data">Activity-level data</h2>
+<p>Fortunately, there’s a command that allows us to access this information.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_streams</span>(stoken,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">id =</span> <span class="st">"activity id here"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>However, getting the data for each of the 412 activities I have on Strava using this process would take some time. So, let’s automate it!</p>
+<p>First, let’s create a smaller version of the dataset to make sure that we don’t have any errors before bombarding the API with bad requests.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A smaller version of our dataset</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>mini <span class="ot">&lt;-</span> <span class="fu">head</span>(activity.list, <span class="dv">5</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Run a function from rows 1:5 of the mini dataframe, using the activity 'id' column as our index. </span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(mini), <span class="cf">function</span>(i) {</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  temp <span class="ot">&lt;-</span> <span class="fu">get_streams</span>(stoken, <span class="at">id =</span> mini<span class="sc">$</span>id[i])</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Fortunately we did this with a smaller dataset, because - using my data, at least - there’s already an error!</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>Error <span class="cf">in</span> <span class="fu">get_streams</span>(stoken, <span class="at">id =</span> mini<span class="sc">$</span>id[i]) <span class="sc">:</span> Not <span class="fu">Found</span> (HTTP <span class="dv">404</span>).</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>A problem with this function is that there’s no way to know which of the 5 activities we requested caused this problem. Although, this provides us with the opportunity to use a command that I’ve found myself relying on a lot lately: <code>tryCatch()</code>. This function allows for two main possibilities:</p>
+<ol type="1">
+<li>The omission of data causing an error, allowing the command to run without halting.</li>
+<li>Understanding which cases are causing the problem.</li>
+</ol>
+<p>In this instance, I want to understand what’s going wrong with the non-functional ‘id’ variables to make sure that there aren’t problems in the future and to prevent sending a tonne of bad requests to the API.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(mini), <span class="cf">function</span>(i) {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 'tries' to run this function</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>({</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    temp <span class="ot">&lt;-</span> <span class="fu">get_streams</span>(stoken, <span class="at">id =</span> mini<span class="sc">$</span>id[i])</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># if an error occurs, provides the following output</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">error =</span> <span class="cf">function</span>(error) {</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"Error at index:"</span>, i, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">"Error message:"</span>, <span class="fu">conditionMessage</span>(error), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="cn">NULL</span>)  </span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>}) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Error at index: 5 
+Error message: Not Found (HTTP 404). </code></pre>
+</div>
+</div>
+<p>Outstanding! We now have the data from the first four activities, but we’re also able to see that activity 5 in this dataframe is causing the error. A brief inspection shows that the error is likely due to these activities being manually uploaded - a symptom of a broken Garmin watch, and missing several key variables of importance!</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Look at a valid row (4) and an invalid row (5)</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>mini[<span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">5</span>),] <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id, manual, max_speed, start_latlng1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["id"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["manual"],"name":[2],"type":["chr"],"align":["left"]},{"label":["max_speed"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["start_latlng1"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"10432803321","2":"FALSE","3":"18.4032","4":"-33.71879","_rn_":"4"},{"1":"10432438711","2":"TRUE","3":"0.0000","4":"NA","_rn_":"5"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>To confirm this hypothesis, we can run the function over some manually uploaded activities to see if any of them are able to produce a valid result.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>manual_test <span class="ot">&lt;-</span> activity.list <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(manual <span class="sc">==</span> <span class="st">"TRUE"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(., <span class="dv">5</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(manual_test), <span class="cf">function</span>(i) {</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>({</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    temp <span class="ot">&lt;-</span> <span class="fu">get_streams</span>(stoken, <span class="at">id =</span> manual_test<span class="sc">$</span>id[i])</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">error =</span> <span class="cf">function</span>(error) {</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste</span>(<span class="st">"Error at index:"</span>, i, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste</span>(<span class="st">"Error message:"</span>, <span class="fu">conditionMessage</span>(error), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="cn">NULL</span>)  </span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>}) <span class="sc">%&gt;%</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>()</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[],"data":[],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>Not a single valid result. Well, at least that was an easy fix! Now, let’s create a dataframe which omits these activities, and to be proactive let’s remove activities without a set of latitude/longitude coordinates and heart rate data (as we might want to explore these later on), and any activities that aren’t runs.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>activities <span class="ot">&lt;-</span> activity.list <span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(manual <span class="sc">!=</span> <span class="st">"TRUE"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(start_latlng1),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>         <span class="sc">!</span><span class="fu">is.na</span>(max_heartrate)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"Run"</span>, sport_type))</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>mini<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">head</span>(activities, <span class="dv">5</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Run a function from rows 1:5 of the mini dataframe, using the activity 'id' column as our index. </span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(mini<span class="fl">.1</span>), <span class="cf">function</span>(i) {</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  temp <span class="ot">&lt;-</span> <span class="fu">get_streams</span>(stoken, <span class="at">id =</span> mini<span class="fl">.1</span><span class="sc">$</span>id[i])</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="wrangling-and-tidying-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="wrangling-and-tidying-the-data">Wrangling and tidying the data</h2>
+<p>We have now - in theory - some working code to pull activity-level data from Strava’s API. Let’s see what one of the elements from our dataset looks like.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> <span class="fu">get_streams</span>(stoken, <span class="at">id =</span> mini<span class="fl">.1</span><span class="sc">$</span>id[<span class="dv">1</span>])</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(temp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Length Class  Mode
+ [1,] 5      -none- list
+ [2,] 5      -none- list
+ [3,] 5      -none- list
+ [4,] 5      -none- list
+ [5,] 5      -none- list
+ [6,] 5      -none- list
+ [7,] 5      -none- list
+ [8,] 5      -none- list
+ [9,] 5      -none- list
+[10,] 5      -none- list</code></pre>
+</div>
+</div>
+<p>Hmmm - that’s not a particularly nice structure for analysis, so let’s tidy it up a little. First, we’ll transpose the set of lists and convert them to a tibble. <a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a></p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>temp <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">transpose</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">as_tibble</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["type"],"name":[1],"type":["list"],"align":["right"]},{"label":["data"],"name":[2],"type":["list"],"align":["right"]},{"label":["series_type"],"name":[3],"type":["list"],"align":["right"]},{"label":["original_size"],"name":[4],"type":["list"],"align":["right"]},{"label":["resolution"],"name":[5],"type":["list"],"align":["right"]}],"data":[{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>That’s a bit better, now at least we can begin to work with this data! The next step is keep the ‘type’ and ‘data’ columns and remove everything else, then we should <code>unlist</code> the data and convert 0-length lists to NA values. After this, we can perform some more tidying and add some important variables to make these activities identifiable in the future.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>temp.data <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">transpose</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(type, data) <span class="sc">%&gt;%</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">type =</span> <span class="fu">unlist</span>(type),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">data =</span> purrr<span class="sc">::</span><span class="fu">map</span>(data, <span class="sc">~</span> purrr<span class="sc">::</span><span class="fu">modify_if</span>(.x, <span class="sc">~</span><span class="fu">length</span>(.) <span class="sc">==</span> <span class="dv">0</span>, <span class="sc">~</span><span class="cn">NA</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># With the data wrangled, let's transform it into a tidy format!</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">spread</span>(<span class="at">data =</span> ., <span class="at">key =</span> type, <span class="at">value =</span> data) <span class="sc">%&gt;%</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">unnest</span>(<span class="at">cols =</span> <span class="fu">everything</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate_at</span>(<span class="fu">vars</span>(<span class="sc">-</span>latlng), <span class="sc">~</span> <span class="fu">unlist</span>(.)) <span class="sc">%&gt;%</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">unnest_wider</span>(latlng, <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">activity =</span> <span class="dv">1</span>,</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">id =</span> mini<span class="sc">$</span>id[<span class="dv">1</span>])</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(temp.data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["altitude"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["cadence"],"name":[2],"type":["int"],"align":["right"]},{"label":["distance"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["grade_smooth"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["heartrate"],"name":[5],"type":["int"],"align":["right"]},{"label":["latlng_1"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["latlng_2"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["moving"],"name":[8],"type":["lgl"],"align":["right"]},{"label":["temp"],"name":[9],"type":["int"],"align":["right"]},{"label":["time"],"name":[10],"type":["int"],"align":["right"]},{"label":["velocity_smooth"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["activity"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["id"],"name":[13],"type":["dbl"],"align":["right"]}],"data":[{"1":"52.2","2":"53","3":"0.0","4":"0.0","5":"106","6":"-33.76342","7":"151.1133","8":"FALSE","9":"20","10":"0","11":"0.000","12":"1","13":"10448718656"},{"1":"52.2","2":"53","3":"3.6","4":"0.0","5":"105","6":"-33.76344","7":"151.1133","8":"TRUE","9":"20","10":"1","11":"0.000","12":"1","13":"10448718656"},{"1":"52.2","2":"53","3":"5.9","4":"3.3","5":"105","6":"-33.76346","7":"151.1132","8":"TRUE","9":"20","10":"2","11":"2.975","12":"1","13":"10448718656"},{"1":"52.2","2":"83","3":"9.1","4":"5.2","5":"104","6":"-33.76347","7":"151.1132","8":"TRUE","9":"20","10":"3","11":"3.030","12":"1","13":"10448718656"},{"1":"52.6","2":"84","3":"12.2","4":"11.4","5":"105","6":"-33.76349","7":"151.1132","8":"TRUE","9":"20","10":"4","11":"3.050","12":"1","13":"10448718656"},{"1":"52.8","2":"83","3":"15.2","4":"15.2","5":"107","6":"-33.76351","7":"151.1132","8":"TRUE","9":"20","10":"5","11":"3.038","12":"1","13":"10448718656"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Perfect! We now have that all-important heart rate data, along with a few other useful variables for some later analysis!</p>
+</section>
+<section id="api-request-limits" class="level2">
+<h2 class="anchored" data-anchor-id="api-request-limits">API Request limits</h2>
+<p>We’re almost there, we just need to ask the API for this data and combine it. However, the next problem we face comes from Strava’s API architecture:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/request_limits_ugh.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">API Request limits can be a problem when you don’t pay-to-play.</figcaption>
+</figure>
+</div>
+<p>After filtering my activities, I still have to make 308 requests through the API, which means that we’ll have to create a function which knows to stop sending requests for a 15-minute period once we approach that 200 request limit, and once that time has passed can resume with the remaining requests.</p>
+<p>Ideally, this function would be able to work with a request of any number of items, not just my 308. I’ve created something that should work for this task using a modulus operator and a <code>Sys.sleep</code> command. If you’re going to run it yourself, be mindful that this function will take 15 minutes per 180 activities<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>!</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First, create an empty list that will store each request</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>result_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>batches <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(activities) <span class="sc">%/%</span> <span class="dv">180</span>) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>cases_per_batch <span class="ot">&lt;-</span> <span class="fu">nrow</span>(activities) <span class="sc">/</span> batches</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(activities)) {</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Sys.sleep</span>(<span class="cf">if</span> (i <span class="sc">%%</span> cases_per_batch <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> </span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>                i <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="dv">900</span> <span class="cf">else</span> <span class="dv">0</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  temp <span class="ot">&lt;-</span> <span class="fu">get_streams</span>(stoken, activities<span class="sc">$</span>id[i])</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    purrr<span class="sc">::</span><span class="fu">transpose</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(type, data) <span class="sc">%&gt;%</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">type =</span> <span class="fu">unlist</span>(type),</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>                  <span class="at">data =</span> purrr<span class="sc">::</span><span class="fu">map</span>(data, <span class="sc">~</span><span class="fu">replace</span>(.x, <span class="fu">length</span>(.x) <span class="sc">==</span> <span class="dv">0</span>, <span class="cn">NA</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">spread</span>(<span class="at">data =</span> ., <span class="at">key =</span> type, <span class="at">value =</span> data) <span class="sc">%&gt;%</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">unnest</span>(<span class="at">cols =</span> <span class="fu">everything</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate_at</span>(<span class="fu">vars</span>(<span class="sc">-</span>latlng), <span class="sc">~</span> <span class="fu">unlist</span>(.)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">unnest_wider</span>(latlng, <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">activity =</span> i,</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>                  <span class="at">id =</span> activities<span class="sc">$</span>id[i])</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>  result_list[[i]] <span class="ot">&lt;-</span> data</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> result_list <span class="sc">%&gt;%</span></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>() </span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, I'm going to save this dataset, so I don't have to run this call again and waste 16 minutes of my life!</span></span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a><span class="co"># save(df, file = "data/all_activities.RData")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="creating-a-measure-of-training-load" class="level2">
+<h2 class="anchored" data-anchor-id="creating-a-measure-of-training-load">Creating a measure of training load!</h2>
+<p>For quantifying training load, let’s use a modified version of the Training Impulse (TRIMP) formula <span class="citation" data-cites="morton1990modeling">(see <a href="#ref-morton1990modeling" role="doc-biblioref">Morton, Fitz-Clarke, and Banister 1990</a>)</span>. This version incorporates an individual weighting factor and accounts for different resting and maximum heart rates. It also has a non-linear term to try to capture the phenomena that higher heart rates are more fatiguing / indicative of a higher training load.</p>
+<p>Also, as mentioned before, rather than use the average heart rate method, we’ll create a measure for each observation of heart rate data. This means that we will need to create a few new variables in our dataset.</p>
+<ul>
+<li>the change in time between observations - (d.time)</li>
+<li>the athlete’s resting and maximum heart rates</li>
+<li>the specific heart rate reserve (HRR) for each heart rate measure <a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a></li>
+<li>the TRIMP value for each heart rate observation, converted to a value per minute <a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a></li>
+<li>some values for day, week, month, and year</li>
+</ul>
+<p>We can also use the activity ‘id’ variable to include some of the aggregated data for each activity.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select aggregated activity variables</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>activity.variables <span class="ot">&lt;-</span> activity.list <span class="sc">%&gt;%</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id, total_elevation_gain, </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">activity_distance =</span> distance,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>         average_speed, max_speed,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">date =</span> start_date_local)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(activity, time) <span class="sc">%&gt;%</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(activity.variables) <span class="sc">%&gt;%</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(activity) <span class="sc">%&gt;%</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">activity_time =</span> <span class="fu">max</span>(time),</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>                <span class="at">d.time =</span> time <span class="sc">-</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(time),</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">d.time =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(d.time), <span class="dv">0</span>, d.time),</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>                <span class="at">rest_hr =</span> <span class="dv">55</span>,</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>                <span class="at">max_hr =</span> <span class="dv">190</span>,</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>                <span class="at">HRR =</span> ((heartrate <span class="sc">-</span> rest_hr) <span class="sc">/</span> (max_hr <span class="sc">-</span> rest_hr)),</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>                <span class="at">TRIMP =</span> (d.time <span class="sc">/</span> <span class="dv">60</span>) <span class="sc">*</span> HRR <span class="sc">*</span> (<span class="fl">0.64</span><span class="sc">*</span><span class="fu">exp</span>(<span class="dv">1</span>))<span class="sc">^</span>(<span class="fl">1.92</span> <span class="sc">*</span> HRR),</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>                <span class="at">TRIMP_session =</span> <span class="fu">sum</span>(TRIMP, <span class="at">na.rm =</span> T),</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>                <span class="at">year =</span> <span class="fu">year</span>(<span class="fu">as.POSIXct</span>(date)),</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>                <span class="at">month =</span> <span class="fu">month</span>(<span class="fu">as.POSIXct</span>(date)),</span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>                <span class="at">day =</span> <span class="fu">weekdays</span>(<span class="fu">as.POSIXct</span>(date)),</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>                <span class="at">week =</span> <span class="fu">isoweek</span>(<span class="fu">ymd_hms</span>(date)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="plotting-our-data" class="level2">
+<h2 class="anchored" data-anchor-id="plotting-our-data">Plotting our data</h2>
+<p>First, let’s create a modified version of the dataset to provide some general insights. Now that we have a more accurate version of activity-level training load, we can re-aggregate the data for plotting.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>plotting_data <span class="ot">&lt;-</span> df1 <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(activity, date, activity_distance, </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>         average_speed, max_speed, activity_time, </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>         TRIMP_session, year, month, day, week) <span class="sc">%&gt;%</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unique</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Okay, now let’s create a plot to look at our training load over the years we have data available for. This will allow us to assess our consistency and see trends in our training.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>plotting_data <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, week) <span class="sc">%&gt;%</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">weekly_TRIMP =</span> <span class="fu">sum</span>(TRIMP_session, <span class="at">na.rm =</span> T)) <span class="sc">%&gt;%</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> week, <span class="at">y =</span> weekly_TRIMP, <span class="at">fill =</span> <span class="fu">factor</span>(year))) <span class="sc">+</span> </span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span> </span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> ggokabeito<span class="sc">::</span><span class="fu">palette_okabe_ito</span>()) <span class="sc">+</span> </span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()  <span class="sc">+</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Consolas"</span>),</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Weekly training load (TRIMPexp) over the years"</span>,</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Week of the year"</span>,</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Weekly training load"</span>) <span class="sc">+</span> </span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> year, <span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">scales =</span> <span class="st">"fixed"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Well, that’s not great… where’s 2020 and 2022? In my defence, I did run throughout the back half of 2023 but didn’t record these sessions because my Garmin watch broke, and I haven’t gotten around to having it fixed yet. So that’s a good lesson: you can’t analyse or evaluate data that you don’t have!</p>
+<p>Perhaps, it would be more useful to look at the data from 2018 and the start of 2019, where I was somewhat more consistent with my training. First, let’s re-plot the weekly training load data from 2018 and 2019, and then we can look at the average speed of all workouts each week during this time period, too. It might also be fun to use a slightly different ‘geom’ for each plot.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>plot_trimp <span class="ot">&lt;-</span> plotting_data <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2018</span> <span class="sc">|</span> </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>           year <span class="sc">==</span> <span class="dv">2019</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, week) <span class="sc">%&gt;%</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">weekly_TRIMP =</span> <span class="fu">sum</span>(TRIMP_session, <span class="at">na.rm =</span> T)) <span class="sc">%&gt;%</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> week, <span class="at">y =</span> weekly_TRIMP, <span class="at">fill =</span> <span class="fu">factor</span>(year))) <span class="sc">+</span> </span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span> </span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> ggokabeito<span class="sc">::</span><span class="fu">palette_okabe_ito</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))) <span class="sc">+</span> </span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">52</span>)) <span class="sc">+</span> </span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()  <span class="sc">+</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Consolas"</span>),</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Weekly TRIMP across 2018 and 2019"</span>,</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Week of the year"</span>,</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Weekly training load"</span>) <span class="sc">+</span> </span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> year)</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>plot_trimp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>plot_speed <span class="ot">&lt;-</span> plotting_data <span class="sc">%&gt;%</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2018</span> <span class="sc">|</span> </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>           year <span class="sc">==</span> <span class="dv">2019</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, week) <span class="sc">%&gt;%</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">weekly_TRIMP =</span> <span class="fu">sum</span>(TRIMP_session, <span class="at">na.rm =</span> T),</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">average_speed =</span> <span class="fu">mean</span>(average_speed, <span class="at">na.rm =</span> T)) <span class="sc">%&gt;%</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> week, <span class="at">y =</span> average_speed, <span class="at">colour =</span> <span class="fu">factor</span>(year))) <span class="sc">+</span> </span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span> ggokabeito<span class="sc">::</span><span class="fu">palette_okabe_ito</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))) <span class="sc">+</span> </span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">52</span>)) <span class="sc">+</span> </span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()  <span class="sc">+</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">"Consolas"</span>),</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Average weekly speed of runs across 2018 and 2019"</span>,</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="st">"Week of the year"</span>,</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="st">"Weekly average speed (km/h)"</span>) <span class="sc">+</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> year)</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>plot_speed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>It looks like there’s a relationship between consistent training and the average weekly speed of workouts. Hmmmm, who would have thought? However, to make this a little bit clearer we can plot these two figures together using the <code>patchwork</code> library.</p>
+<div class="cell">
+<details open="">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>plot_trimp <span class="sc">+</span> plot_speed <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">ncol =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Not bad. While there’s plenty more analysis to undertake, this post is already much longer than anticipated due to the challenges of working with the Strava API, so I think I’ll leave it here for now and dive into this data in more detail later.</p>
+</section>
+<section id="takeaways-goals-for-the-new-year" class="level2">
+<h2 class="anchored" data-anchor-id="takeaways-goals-for-the-new-year">Takeaways &amp; goals for the New Year</h2>
+<p>So, it’s clear that I’ve been terribly inconsistent with my aerobic training. However, I don’t record data for my resistance training anymore, so there’s no way to tell how inconsistent I’ve been with that.</p>
+<p>For 2024, I have ideas of an ironman distance triathlon and my first 100 miler run floating around in my mind, but let’s start with the basics: consistency.</p>
+
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-morton1990modeling" class="csl-entry" role="listitem">
+Morton, R Hugh, John R Fitz-Clarke, and Eric W Banister. 1990. <span>“Modeling Human Performance in Running.”</span> <em>Journal of Applied Physiology</em> 69 (3): 1171–77.
+</div>
+</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>or perhaps the past few years…<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>This assumes that you already have a Strava account.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>I assume this is a requirement intended for the more serious app developers, rather than the hobbyist analysts.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>It appears that I have a few cross country ski activities and hikes in here!<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>I’m going to call each library in this tidying step, as we’ll be incorporating this code into a bigger function later on.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>I use 180 requests instead of 200 to allow for some wiggle room, in case you need to make some changes to your code, or want to make another small request.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>This can be calculated using the following formula: <span class="math display">\[ ((heart\:rate - resting\:heart\:rate) / (max\:heart\:rate - resting\:heart\:rate)) \]</span><a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>This can be calculated using the following formula: <span class="math display">\[ TRIMP = (d.time / 60) * HRR * (0.64e ^{1.92 * HRR} ) \]</span><a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{ashton2023,
+  author = {Ashton, Luke},
+  title = {Analysis of {Strava} Data - and Training Load - in {R.}},
+  date = {2023-12-28},
+  url = {https://luke-ashton.netlify.app/posts/strava-api-analysis},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-ashton2023" class="csl-entry quarto-appendix-citeas" role="listitem">
+Ashton, Luke. 2023. <span>“Analysis of Strava Data - and Training Load -
+in R.”</span> December 28, 2023. <a href="https://luke-ashton.netlify.app/posts/strava-api-analysis">https://luke-ashton.netlify.app/posts/strava-api-analysis</a>.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://giscus.app/client.js" data-repo="Luke-Ashton/blog" data-repo-id="R_kgDOK98liA" data-category="General" data-category-id="DIC_kwDOK98liM4CcAyc" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

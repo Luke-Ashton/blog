@@ -10,3 +10,11 @@ title-block-banner: true
 comments: 
   giscus: 
     repo: Luke-Ashton/blog
+
+format:
+  html:
+    df-print: paged
+    toc: true
+    code-overflow: wrap
+    code-fold: show
+    code-summary: "Show code"

@@ -1,5 +1,5 @@
 ---
-title: "About"
+title: ""
 main-photo: images/Luke_Wollemia.jpg
 about:
   template: jolla
@@ -8,7 +8,7 @@ about:
       text: Github
       href: https://github.com/Luke-Ashton
     - icon: google  
-      text: Scholar
+      text: Google Scholar
       href: https://scholar.google.com/citations?user=2kSpXFEAAAAJ&hl=en
 comments: false
 ---
@@ -31,8 +31,15 @@ comments: false
 :::
 
 ::: {.g-col-sm-8}
-<br><br><br>
+
+## About me
 
 I'm a PhD student at Macquarie University in Sydney, currently working on research investigating educational inequality in Australia.
+
+However, this blog will largely be a space for me to write about things that I work on in my spare time - and the topics covered will be quite wide-ranging.
+
+As the year comes to an end, and I find myself with more time, I am considering my health and fitness more than I have for some time. As a result, some of the first few articles will be based on some health/fitness data. 
+
+
 :::
 :::
