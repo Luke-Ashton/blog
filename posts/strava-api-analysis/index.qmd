@@ -1,8 +1,8 @@
 ---
-title: "Analysis of Strava data - and training load - in R."
+title: "Analysing Strava data in R."
 author: "Luke Ashton"
-date: "2023-12-28"
-image: images/request_limits_ugh.png
+date: "2023-12-29"
+image: images/combined_plot.png
 
 bibliography: references.bib
 categories:
@@ -12,7 +12,7 @@ categories:
 - Strava
 - Sports statistics
 
-description: 'A mediocre runner wrangles data through the Strava API.'
+description: 'A former runner wrangles data through the Strava API.'
 google-scholar: true
 citation: true
 
@@ -424,7 +424,6 @@ plotting_data %>%
   scale_fill_manual(values = ggokabeito::palette_okabe_ito()) + 
   theme_minimal()  +
   theme(
-    text = element_text(family = "Consolas"),
     legend.position = "none",
     legend.title = element_blank()
   ) + 
@@ -453,7 +452,6 @@ plot_trimp <- plotting_data %>%
   coord_cartesian(xlim = c(0, 52)) + 
   theme_minimal()  +
   theme(
-    text = element_text(family = "Consolas"),
     legend.position = "none",
     legend.title = element_blank()
   ) + 
@@ -483,7 +481,6 @@ plot_speed <- plotting_data %>%
   coord_cartesian(xlim = c(0, 52)) + 
   theme_minimal()  +
   theme(
-    text = element_text(family = "Consolas"),
     legend.position = "none",
     legend.title = element_blank()
   ) + 
@@ -500,8 +497,14 @@ It looks like there's a relationship between consistent training and the average
 
 ```{r}
 
-plot_trimp + plot_speed + plot_layout(ncol = 1)
+combined_plot <- plot_trimp + plot_speed + plot_layout(ncol = 1)
 
+combined_plot
+
+# Let's save this to use as the image for the post! 
+
+# ggsave(combined_plot, file = "images/combined_plot.png",
+#        height = 6, width = 8, units = "in")
 ```
 
 
