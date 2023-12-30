@@ -1,6 +1,5 @@
 ---
 title: "Analysing Strava data in R."
-author: "Luke Ashton"
 date: "2023-12-29"
 image: images/combined_plot.png
 
@@ -91,16 +90,18 @@ stoken <- httr::config(
 
 ## Aggregated activity data
 
-However, one limitation of the standard API and the RStrava package is that most of the simpler functions only provide aggregated activity data. For instance, the following code creates an activity list with some topline stats from the 412 activities I've logged with Strava. 
+However, one limitation of the standard API and the RStrava package is that most of the simpler functions only provide aggregated activity data. For instance, the following code creates an activity list with some topline stats from the 412 activities I've logged with Strava. There's also a line in there to prevent any new activities from popping up if I ever need to re-run this! 
 
 ```{r}
 
 activity.list <- stoken %>%
   get_activity_list() %>%
-  compile_activities()
+  compile_activities() %>%
+  filter(start_date_local < as.Date("2023-12-29"))
 
 head(activity.list)
 ```
+
 
 While it's interesting to see items like the achievement count, average speed, and average heart rate for each activity, this information may not help us get an accurate measure of training load. One of the more well-known measures of training load is the TRIMP (training impulse) value, which estimates training load by multiplying the number of minutes the activity took by the average heart rate during it. 
 

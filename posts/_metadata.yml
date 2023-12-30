@@ -18,3 +18,7 @@ format:
     code-overflow: wrap
     code-fold: show
     code-summary: "Show code"
+    
+author:
+  - name: Luke Ashton
+    orcid: 0009-0004-2060-0203
