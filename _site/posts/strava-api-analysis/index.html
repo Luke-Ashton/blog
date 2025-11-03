@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.433">
+<meta name="generator" content="quarto-1.6.42">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,7 +10,7 @@
 <meta name="dcterms.date" content="2023-12-29">
 <meta name="description" content="A former runner wrangles data through the Strava API.">
 
-<title>Luke Ashton - Analysing Strava data in R.</title>
+<title>Analysing Strava data in R. – Luke Ashton</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -25,7 +25,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -36,7 +36,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -61,6 +61,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -91,19 +92,25 @@ div.csl-indent {
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-7d6694c7b3d8f5ecf9ec986835a4b683.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-3d3e9f5edd0362804af8ca21528937ae.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -112,17 +119,46 @@ div.csl-indent {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
 }</script>
-
 <link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+
 <script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../../styles.css">
 <meta name="citation_title" content="Analysing Strava data in R.">
@@ -131,7 +167,7 @@ div.csl-indent {
 <meta name="citation_cover_date" content="2023-12-29">
 <meta name="citation_year" content="2023">
 <meta name="citation_online_date" content="2023-12-29">
-<meta name="citation_fulltext_html_url" content="https://luke-ashton.netlify.app/posts/strava-api-analysis">
+<meta name="citation_fulltext_html_url" content="https://luke-ashton.netlify.app/posts/strava-api-analysis/">
 <meta name="citation_language" content="en">
 <meta name="citation_reference" content="citation_title=Modeling human performance in running;,citation_author=R Hugh Morton;,citation_author=John R Fitz-Clarke;,citation_author=Eric W Banister;,citation_publication_date=1990;,citation_cover_date=1990;,citation_year=1990;,citation_issue=3;,citation_volume=69;,citation_journal_title=Journal of applied physiology;">
 </head>
@@ -139,51 +175,51 @@ div.csl-indent {
 <body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Luke Ashton</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../blog.html" rel="" target="">
- <span class="menu-text">Blog</span></a>
+    <a class="nav-link" href="../../blog.html"> 
+<span class="menu-text">Blog</span></a>
   </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/Luke-Ashton" rel="" target=""><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/Luke-Ashton"> <i class="bi bi-github" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://scholar.google.com/citations?user=2kSpXFEAAAAJ&amp;hl=en" rel="" target=""><i class="bi bi-google" role="img">
+    <a class="nav-link" href="https://scholar.google.com/citations?user=2kSpXFEAAAAJ&amp;hl=en"> <i class="bi bi-google" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://www.strava.com/athletes/31921497" rel="" target=""><i class="bi bi-strava" role="img">
+    <a class="nav-link" href="https://www.strava.com/athletes/31921497"> <i class="bi bi-strava" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="../../blog.xml" rel="" target=""><i class="bi bi-rss" role="img">
+    <a class="nav-link" href="../../blog.xml"> <i class="bi bi-rss" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
 </ul>
+          </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
-          </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -255,6 +291,7 @@ div.csl-indent {
 
 
 
+
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>With most of Australia closed between Christmas and New Years, I’ve found myself with some free time. This time for reflection has allowed me to consider potential goals for the coming year and, more importantly, my blasé attitude towards my physical health in the past year. <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
@@ -268,7 +305,7 @@ div.csl-indent {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="images/ikashnitsky_strava_map.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">A really cool colour-inverted heatmap from Ilya’s Strava runs!</figcaption>
+<figcaption>A really cool colour-inverted heatmap from Ilya’s Strava runs!</figcaption>
 </figure>
 </div>
 </section>
@@ -276,8 +313,8 @@ div.csl-indent {
 <h2 class="anchored" data-anchor-id="loading-libraries-and-registering-for-the-api">Loading libraries and registering for the API</h2>
 <p>Back to the task at hand, though! First, we’ll need to load the following libraries which will form the foundation for most of our wrangling and analysis.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A gentle reminder to call install.packages("package_name_here") if you don't have any of these installed already!</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
@@ -288,8 +325,8 @@ div.csl-indent {
 <p>Now, to access the Strava API. For this, you will need to register for this ‘service’ <a href="https://www.strava.com/settings/api">here</a> <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
 <p>Once you’ve done this, you will be prompted to name your app and to provide a website URL for it. For the URL, I just used my Strava athlete profile <a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. After inputting this information, you should be directed to a page with your ‘client id’ and your ‘client secret’ - these are both necessary for accessing the API and, Strava reminds you, shouldn’t be shared with anyone!</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>app_name <span class="ot">&lt;-</span> <span class="st">"Put your app name here"</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>client_id <span class="ot">&lt;-</span> <span class="st">"Put your client id here"</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>client_secret <span class="ot">&lt;-</span> <span class="st">"Put your client secret here"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -297,8 +334,8 @@ div.csl-indent {
 </div>
 <p>Then, with this information we can create an API request! I’ll first create an object that we can call any time we need to make a request.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>stoken <span class="ot">&lt;-</span> httr<span class="sc">::</span><span class="fu">config</span>(</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">token =</span> <span class="fu">strava_oauth</span>(</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    app_name, </span>
@@ -314,8 +351,8 @@ div.csl-indent {
 <h2 class="anchored" data-anchor-id="aggregated-activity-data">Aggregated activity data</h2>
 <p>However, one limitation of the standard API and the RStrava package is that most of the simpler functions only provide aggregated activity data. For instance, the following code creates an activity list with some topline stats from the 412 activities I’ve logged with Strava. There’s also a line in there to prevent any new activities from popping up if I ever need to re-run this!</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>activity.list <span class="ot">&lt;-</span> stoken <span class="sc">%&gt;%</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">get_activity_list</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">compile_activities</span>() <span class="sc">%&gt;%</span></span>
@@ -324,7 +361,6 @@ div.csl-indent {
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(activity.list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["achievement_count"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["athlete.id"],"name":[2],"type":["chr"],"align":["left"]},{"label":["athlete.resource_state"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["athlete_count"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["average_heartrate"],"name":[5],"type":["chr"],"align":["left"]},{"label":["average_speed"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["comment_count"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["commute"],"name":[8],"type":["chr"],"align":["left"]},{"label":["display_hide_heartrate_option"],"name":[9],"type":["chr"],"align":["left"]},{"label":["distance"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["elapsed_time"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["elev_high"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["elev_low"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["end_latlng1"],"name":[14],"type":["dbl"],"align":["right"]},{"label":["end_latlng2"],"name":[15],"type":["dbl"],"align":["right"]},{"label":["external_id"],"name":[16],"type":["chr"],"align":["left"]},{"label":["flagged"],"name":[17],"type":["chr"],"align":["left"]},{"label":["from_accepted_tag"],"name":[18],"type":["chr"],"align":["left"]},{"label":["gear_id"],"name":[19],"type":["chr"],"align":["left"]},{"label":["has_heartrate"],"name":[20],"type":["chr"],"align":["left"]},{"label":["has_kudoed"],"name":[21],"type":["chr"],"align":["left"]},{"label":["heartrate_opt_out"],"name":[22],"type":["chr"],"align":["left"]},{"label":["id"],"name":[23],"type":["dbl"],"align":["right"]},{"label":["kudos_count"],"name":[24],"type":["dbl"],"align":["right"]},{"label":["location_country"],"name":[25],"type":["chr"],"align":["left"]},{"label":["manual"],"name":[26],"type":["chr"],"align":["left"]},{"label":["map.id"],"name":[27],"type":["chr"],"align":["left"]},{"label":["map.resource_state"],"name":[28],"type":["dbl"],"align":["right"]},{"label":["map.summary_polyline"],"name":[29],"type":["chr"],"align":["left"]},{"label":["max_heartrate"],"name":[30],"type":["chr"],"align":["left"]},{"label":["max_speed"],"name":[31],"type":["dbl"],"align":["right"]},{"label":["moving_time"],"name":[32],"type":["dbl"],"align":["right"]},{"label":["name"],"name":[33],"type":["chr"],"align":["left"]},{"label":["photo_count"],"name":[34],"type":["dbl"],"align":["right"]},{"label":["pr_count"],"name":[35],"type":["chr"],"align":["left"]},{"label":["private"],"name":[36],"type":["chr"],"align":["left"]},{"label":["resource_state"],"name":[37],"type":["dbl"],"align":["right"]},{"label":["sport_type"],"name":[38],"type":["chr"],"align":["left"]},{"label":["start_date"],"name":[39],"type":["chr"],"align":["left"]},{"label":["start_date_local"],"name":[40],"type":["chr"],"align":["left"]},{"label":["start_latlng1"],"name":[41],"type":["dbl"],"align":["right"]},{"label":["start_latlng2"],"name":[42],"type":["dbl"],"align":["right"]},{"label":["timezone"],"name":[43],"type":["chr"],"align":["left"]},{"label":["total_elevation_gain"],"name":[44],"type":["dbl"],"align":["right"]},{"label":["total_photo_count"],"name":[45],"type":["dbl"],"align":["right"]},{"label":["trainer"],"name":[46],"type":["chr"],"align":["left"]},{"label":["type"],"name":[47],"type":["chr"],"align":["left"]},{"label":["upload_id"],"name":[48],"type":["chr"],"align":["left"]},{"label":["upload_id_str"],"name":[49],"type":["chr"],"align":["left"]},{"label":["utc_offset"],"name":[50],"type":["chr"],"align":["left"]},{"label":["visibility"],"name":[51],"type":["chr"],"align":["left"]},{"label":["average_cadence"],"name":[52],"type":["chr"],"align":["left"]},{"label":["average_temp"],"name":[53],"type":["chr"],"align":["left"]},{"label":["average_watts"],"name":[54],"type":["dbl"],"align":["right"]},{"label":["device_watts"],"name":[55],"type":["chr"],"align":["left"]},{"label":["kilojoules"],"name":[56],"type":["dbl"],"align":["right"]},{"label":["workout_type"],"name":[57],"type":["chr"],"align":["left"]}],"data":[{"1":"0","2":"31921497","3":"1","4":"1","5":"NA","6":"4.4424","7":"0","8":"FALSE","9":"FALSE","10":"3.3523","11":"2767","12":"126.5","13":"85.3","14":"-33.71870","15":"151.1500","16":"97FC79F1-0AF9-408C-8620-E057A55327E5-activity.fit","17":"FALSE","18":"FALSE","19":"g14059828","20":"FALSE","21":"FALSE","22":"FALSE","23":"10448718656","24":"0","25":"Australia","26":"FALSE","27":"a10448718656","28":"2","29":"htxlEonpy[@FB?BBJGR@d@Wn@?BEB@HI@IKIO@GCIO@KCSISIE[KK@KEE@]IMKIAAEG?MIQAECWQ?KMSEQEc@CEA_@@G?KCG@ESk@C_@CCGMIGM?IEOOGAW]YSIUICKKMGe@CI@UE?CA?CGEAGOYMSACBUBSTGAIHM?OKGQWc@MGSSG?CEM]?]Oc@UIQCIKGKUKQAECI?ACICUOo@HIE_@FKEQ?E@MAIC_@q@IAAGEAKAYNK@KFUDK?C@I@GBUOU?EIa@CECG@_@GIBG?MEKK]CGEU@OE_@CGBMA_@DOAIE?IKI?EGGKIE?CGIAe@DWAo@NIHWB_@VG@UJOCK@e@GICIICYI[CAWCQGQBO@UKIASDSE_@?M@MFM?MGQAKGI@EEUC?AC@GCBDLDFJ^FBBB?^NB?BGZSLAZ@LKJC\\\\JPJNAPDJEFBLPFJ@NFHBAPHP?FHNFFANOT@NABENC\\\\MVQR?TQVAFBLJPHDFd@VP?DCNBTCV@L?RHDBZ@HLLGP?JFD?L@^PJCHDHJJ@RCXBPEPMj@GLL\\\\DRRDPD?HN@AFDHCNORGTBNAf@LN@PHNLNBBCHFD@VPLPTBTZNn@@VLLJDh@t@PJPXHBP?JGPODOHGRGLHVZ?DHHPLPCTBVJDHB?LLRJHPRLBHLPJBNPFBNLN\\\\?LHd@@XDJBf@ADF^BHBBJTD@RIXN@@NBTLDARJVDJHNBVHHFFNAPHVJNTJ@FEFG@W@KAIFQBOJS@KE","30":"NA","31":"10.6740","32":"2717","33":"COVID walk with Nani","34":"0","35":"0","36":"FALSE","37":"2","38":"Walk","39":"2023-12-28T06:56:34Z","40":"2023-12-28T17:56:34Z","41":"-33.71860","42":"151.1500","43":"(GMT+10:00) Australia/Sydney","44":"54.4","45":"0","46":"FALSE","47":"Walk","48":"11182369841","49":"11182369841","50":"39600","51":"everyone","52":"NA","53":"NA","54":"NA","55":"NA","56":"NA","57":"NA","_rn_":"1"},{"1":"4","2":"31921497","3":"1","4":"1","5":"NA","6":"10.1556","7":"0","8":"FALSE","9":"FALSE","10":"10.0859","11":"3601","12":"169.7","13":"85.3","14":"-33.71714","15":"151.1527","16":"AAF9D3E6-421B-4D8F-9E07-7C7748812273-activity.fit","17":"FALSE","18":"FALSE","19":"g14059828","20":"FALSE","21":"FALSE","22":"FALSE","23":"10436921535","24":"0","25":"Australia","26":"FALSE","27":"a10436921535","28":"2","29":"`uxlEsnpy[LD^En@S\\\\?HMCKi@[GQEYGKo@Yc@IcA]c@WSQOe@EcAOiAMUYQiBaBa@Qi@Aq@o@KGQAOB]\\\\OBMEc@k@{@{@KOGc@Uc@QOOE[Y_@K[Ui@O_ABu@HSIWe@UOa@CWFUPk@?aA]S@yAYuACo@SWA[Qg@OeAZOBSHa@DOJa@F[?gA_@Qi@MQUC[Be@EsAL_@AYA_@Qi@EkAU]Wm@SIIi@w@}@wBa@UGKEe@@YE]UGQBKJKTq@`@_@HcCQMECEM_@Gg@Uq@UUOEe@A[E[a@a@[s@uAIQBGn@RXf@HBXRh@HrAE`A\\\\R?XMVEd@[j@Un@g@HSTO^Gf@DLE`A?fBNvBFvBx@lATRHL?\\\\Pr@z@z@R~@Jd@CRGLS@k@DUNqD?UFi@B_ADUAq@ESKOs@c@[w@eBqAWQIA_Aw@{@cBOQIUKu@i@m@QYm@sAc@e@o@c@qAoAa@Q]WY_@iAg@{Cg@wCu@_AKmC?sDa@kB@qBWWBm@E[B}@GgAOqAc@m@Ia@Qm@KsAk@i@[iB_@[Ea@UQE_AISMKWXXbAN~@X`AHlA`@nAl@v@Rv@f@b@Bd@LNLHh@@r@Av@w@`HCtAC^CFGY?e@RcBBaAVmAFkBHc@@c@DUFIf@@h@EdANt@A|AHf@A`@HnAJZ?`@FrADh@Hp@BzA?v@Fl@Tt@HbDx@n@JdAb@x@v@VLjAdAl@^lAxAVp@f@|@n@dBdA~ARLNT^JXd@b@Xh@Vh@n@l@Vl@j@JVKfC@NSdBKrAEvAMVi@LmAGq@Oc@Q]k@MMu@Mq@[uBs@c@EkDEoAQaAC_@Nu@p@}@`@]Fq@V[V[FGC_@[MEY?aAJQCc@Wm@q@SIYC@Nl@bAx@bANJv@DRNb@f@J`@Fh@FTLJTLvABVIh@a@\\\\e@JEb@?XZHn@DHVf@b@b@l@bABTh@~@LLb@Pn@`@hATdA^`@@rAO`@Fv@?LLPf@FFrARd@En@OPMj@Kv@Eh@PVRt@Cd@B^Ar@LZNrAFj@L\\\\CLBn@KXALDDHb@\\\\FLPFpAO^Dp@Xn@d@TFb@TV\\\\BNTl@JHjApAXFp@[\\\\B~@p@RH`@BVV","30":"NA","31":"15.6744","32":"3575","33":"Aaaand I have COVID","34":"0","35":"1","36":"FALSE","37":"2","38":"TrailRun","39":"2023-12-26T03:20:44Z","40":"2023-12-26T14:20:44Z","41":"-33.71872","42":"151.1500","43":"(GMT+10:00) Australia/Sydney","44":"154.1","45":"0","46":"FALSE","47":"Run","48":"11170114338","49":"11170114338","50":"39600","51":"everyone","52":"NA","53":"NA","54":"NA","55":"NA","56":"NA","57":"0","_rn_":"2"},{"1":"0","2":"31921497","3":"1","4":"1","5":"NA","6":"8.8884","7":"0","8":"FALSE","9":"FALSE","10":"1.0023","11":"448","12":"118.0","13":"85.3","14":"-33.71783","15":"151.1520","16":"9ED2688F-655C-4F5C-B731-26A44FF4C922-activity.fit","17":"FALSE","18":"FALSE","19":"g14059828","20":"FALSE","21":"FALSE","22":"FALSE","23":"10432812925","24":"0","25":"Australia","26":"FALSE","27":"a10432812925","28":"2","29":"j{vlEelqy[F@FMN?DB`@LJEl@i@TANGHIHE\\\\?`@IN?VHn@h@F@rAKH@DB\\\\B`@Hr@FRJp@HLDL@n@Tf@WJONGHDBAJBh@v@PPF@TIZGf@GP?PDj@XF?TPN@`@ZTJNNLRNn@TZj@h@HTNNJFJ?HAROLQj@Bj@t@TFf@@JDfAhAd@XLNPVL`@","30":"NA","31":"16.6068","32":"406","33":"Afternoon Trail Run","34":"0","35":"0","36":"FALSE","37":"2","38":"TrailRun","39":"2023-12-25T03:56:58Z","40":"2023-12-25T14:56:58Z","41":"-33.70950","42":"151.1548","43":"(GMT+10:00) Australia/Sydney","44":"35.2","45":"0","46":"FALSE","47":"Run","48":"11165803755","49":"11165803755","50":"39600","51":"everyone","52":"NA","53":"NA","54":"NA","55":"NA","56":"NA","57":"0","_rn_":"3"},{"1":"0","2":"31921497","3":"1","4":"1","5":"NA","6":"12.5352","7":"0","8":"FALSE","9":"FALSE","10":"3.0675","11":"881","12":"126.5","13":"85.3","14":"-33.70805","15":"151.1553","16":"C64E3F45-3D44-47F6-8184-9A9E5FA2D42A-activity.fit","17":"FALSE","18":"FALSE","19":"g14059828","20":"FALSE","21":"FALSE","22":"FALSE","23":"10432803321","24":"0","25":"Australia","26":"FALSE","27":"a10432803321","28":"2","29":"luxlEanpy[ZAj@[f@CDE?Kg@UMq@IKMAa@Um@Si@WWEYKWUKiAA_@Ik@Qm@m@y@OMc@UYWWQkAK[c@e@WS?_@`@QBQAGEUa@e@m@OIQQIs@QYiAw@]Ks@a@WA[Aa@BYLM@QIS[[SE@QEe@HQFQ@_@EW?[OUC_@?a@Ic@OSCO@YA_AO[Aa@SSEy@Bc@REAYDa@Vg@LUC{@SWMCEAUEOa@KOAYB_@CWD[Ae@F{@AKIi@Si@aAqBoBQi@AM@SGWMQQMG[Q]Qw@EY@i@?EHQJMCGGCUE[?[HYFKD[Hm@f@g@T}@?KEQYO_@EYe@g@e@K_@DSDy@?c@_@OYc@YG?MGf@hAJF\\\\b@TPPVLFVFd@D`@ZDJJ`@Hl@B\\\\@DDBPFj@J\\\\CPBRCTKLOJGh@q@ZKTBHFLVHf@JXLLRLJLn@xBP`@TZt@`@`AVRJbARL?","30":"NA","31":"18.4032","32":"881","33":"Afternoon Trail Run","34":"0","35":"0","36":"FALSE","37":"2","38":"TrailRun","39":"2023-12-25T03:39:49Z","40":"2023-12-25T14:39:49Z","41":"-33.71879","42":"151.1499","43":"(GMT+10:00) Australia/Sydney","44":"39.8","45":"0","46":"FALSE","47":"Run","48":"11165793337","49":"11165793337","50":"39600","51":"everyone","52":"NA","53":"NA","54":"NA","55":"NA","56":"NA","57":"0","_rn_":"4"},{"1":"0","2":"31921497","3":"1","4":"1","5":"NA","6":"2.9988","7":"0","8":"FALSE","9":"FALSE","10":"12.0000","11":"14400","12":"NA","13":"NA","14":"NA","15":"NA","16":"NA","17":"FALSE","18":"FALSE","19":"g14059828","20":"FALSE","21":"FALSE","22":"FALSE","23":"10432438711","24":"0","25":"Australia","26":"TRUE","27":"a10432438711","28":"2","29":"","30":"NA","31":"0.0000","32":"14400","33":"Walk around the city w/ Ari & Shreedhar","34":"0","35":"0","36":"FALSE","37":"2","38":"Walk","39":"2023-12-24T02:00:00Z","40":"2023-12-24T13:00:00Z","41":"NA","42":"NA","43":"(GMT+10:00) Australia/Sydney","44":"100.0","45":"0","46":"FALSE","47":"Walk","48":"NA","49":"NA","50":"39600","51":"everyone","52":"NA","53":"NA","54":"NA","55":"NA","56":"NA","57":"NA","_rn_":"5"},{"1":"0","2":"31921497","3":"1","4":"1","5":"NA","6":"2.8008","7":"0","8":"FALSE","9":"FALSE","10":"14.0000","11":"18000","12":"NA","13":"NA","14":"NA","15":"NA","16":"NA","17":"FALSE","18":"FALSE","19":"g14059828","20":"FALSE","21":"FALSE","22":"FALSE","23":"10432437449","24":"0","25":"Australia","26":"TRUE","27":"a10432437449","28":"2","29":"","30":"NA","31":"0.0000","32":"18000","33":"Hike w/ Ari, Claire, and Shreedhar @ RNP","34":"0","35":"0","36":"FALSE","37":"2","38":"Hike","39":"2023-12-23T00:30:00Z","40":"2023-12-23T11:30:00Z","41":"NA","42":"NA","43":"(GMT+10:00) Australia/Sydney","44":"300.0","45":"0","46":"FALSE","47":"Hike","48":"NA","49":"NA","50":"39600","51":"everyone","52":"NA","53":"NA","54":"NA","55":"NA","56":"NA","57":"NA","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -340,8 +376,8 @@ div.csl-indent {
 <h2 class="anchored" data-anchor-id="activity-level-data">Activity-level data</h2>
 <p>Fortunately, there’s a command that allows us to access this information.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_streams</span>(stoken,</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">id =</span> <span class="st">"activity id here"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -349,8 +385,8 @@ div.csl-indent {
 <p>However, getting the data for each of the 412 activities I have on Strava using this process would take some time. So, let’s automate it!</p>
 <p>First, let’s create a smaller version of the dataset to make sure that we don’t have any errors before bombarding the API with bad requests.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A smaller version of our dataset</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>mini <span class="ot">&lt;-</span> <span class="fu">head</span>(activity.list, <span class="dv">5</span>)</span>
@@ -366,8 +402,8 @@ div.csl-indent {
 </div>
 <p>Fortunately we did this with a smaller dataset, because - using my data, at least - there’s already an error!</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>Error <span class="cf">in</span> <span class="fu">get_streams</span>(stoken, <span class="at">id =</span> mini<span class="sc">$</span>id[i]) <span class="sc">:</span> Not <span class="fu">Found</span> (HTTP <span class="dv">404</span>).</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
@@ -378,8 +414,8 @@ div.csl-indent {
 </ol>
 <p>In this instance, I want to understand what’s going wrong with the non-functional ‘id’ variables to make sure that there aren’t problems in the future and to prevent sending a tonne of bad requests to the API.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(mini), <span class="cf">function</span>(i) {</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 'tries' to run this function</span></span>
@@ -409,15 +445,14 @@ Error message: Not Found (HTTP 404). </code></pre>
 </div>
 <p>Outstanding! We now have the data from the first four activities, but we’re also able to see that activity 5 in this dataframe is causing the error. A brief inspection shows that the error is likely due to these activities being manually uploaded - a symptom of a broken Garmin watch, and missing several key variables of importance!</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Look at a valid row (4) and an invalid row (5)</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>mini[<span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">5</span>),] <span class="sc">%&gt;%</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id, manual, max_speed, start_latlng1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
 {"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["id"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["manual"],"name":[2],"type":["chr"],"align":["left"]},{"label":["max_speed"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["start_latlng1"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"10432803321","2":"FALSE","3":"18.4032","4":"-33.71879","_rn_":"4"},{"1":"10432438711","2":"TRUE","3":"0.0000","4":"NA","_rn_":"5"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -427,8 +462,8 @@ Error message: Not Found (HTTP 404). </code></pre>
 </div>
 <p>To confirm this hypothesis, we can run the function over some manually uploaded activities to see if any of them are able to produce a valid result.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>manual_test <span class="ot">&lt;-</span> activity.list <span class="sc">%&gt;%</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(manual <span class="sc">==</span> <span class="st">"TRUE"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(., <span class="dv">5</span>)</span>
@@ -455,7 +490,6 @@ Error message: Not Found (HTTP 404). </code></pre>
 <span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
 {"columns":[],"data":[],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -466,8 +500,8 @@ Error message: Not Found (HTTP 404). </code></pre>
 <p><br></p>
 <p>Not a single valid result. Well, at least that was an easy fix! Now, let’s create a dataframe which omits these activities, and to be proactive let’s remove activities without a set of latitude/longitude coordinates and heart rate data (as we might want to explore these later on), and any activities that aren’t runs.<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>activities <span class="ot">&lt;-</span> activity.list <span class="sc">%&gt;%</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(manual <span class="sc">!=</span> <span class="st">"TRUE"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(start_latlng1),</span>
@@ -490,8 +524,8 @@ Error message: Not Found (HTTP 404). </code></pre>
 <h2 class="anchored" data-anchor-id="wrangling-and-tidying-the-data">Wrangling and tidying the data</h2>
 <p>We have now - in theory - some working code to pull activity-level data from Strava’s API. Let’s see what one of the elements from our dataset looks like.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> <span class="fu">get_streams</span>(stoken, <span class="at">id =</span> mini<span class="fl">.1</span><span class="sc">$</span>id[<span class="dv">1</span>])</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(temp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -512,14 +546,13 @@ Error message: Not Found (HTTP 404). </code></pre>
 </div>
 <p>Hmmm - that’s not a particularly nice structure for analysis, so let’s tidy it up a little. First, we’ll transpose the set of lists and convert them to a tibble. <a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a></p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>temp <span class="sc">%&gt;%</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">transpose</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">as_tibble</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
 {"columns":[{"label":["type"],"name":[1],"type":["list"],"align":["right"]},{"label":["data"],"name":[2],"type":["list"],"align":["right"]},{"label":["series_type"],"name":[3],"type":["list"],"align":["right"]},{"label":["original_size"],"name":[4],"type":["list"],"align":["right"]},{"label":["resolution"],"name":[5],"type":["list"],"align":["right"]}],"data":[{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"},{"1":"<chr [1]>","2":"<list [1,604]>","3":"<chr [1]>","4":"<int [1]>","5":"<chr [1]>"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -529,8 +562,8 @@ Error message: Not Found (HTTP 404). </code></pre>
 </div>
 <p>That’s a bit better, now at least we can begin to work with this data! The next step is keep the ‘type’ and ‘data’ columns and remove everything else, then we should <code>unlist</code> the data and convert 0-length lists to NA values. After this, we can perform some more tidying and add some important variables to make these activities identifiable in the future.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>temp.data <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">transpose</span>() <span class="sc">%&gt;%</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span></span>
@@ -550,7 +583,6 @@ Error message: Not Found (HTTP 404). </code></pre>
 <span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(temp.data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-
 <div data-pagedtable="false">
   <script data-pagedtable-source="" type="application/json">
 {"columns":[{"label":["altitude"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["cadence"],"name":[2],"type":["int"],"align":["right"]},{"label":["distance"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["grade_smooth"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["heartrate"],"name":[5],"type":["int"],"align":["right"]},{"label":["latlng_1"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["latlng_2"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["moving"],"name":[8],"type":["lgl"],"align":["right"]},{"label":["temp"],"name":[9],"type":["int"],"align":["right"]},{"label":["time"],"name":[10],"type":["int"],"align":["right"]},{"label":["velocity_smooth"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["activity"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["id"],"name":[13],"type":["dbl"],"align":["right"]}],"data":[{"1":"52.2","2":"53","3":"0.0","4":"0.0","5":"106","6":"-33.76342","7":"151.1133","8":"FALSE","9":"20","10":"0","11":"0.000","12":"1","13":"10448718656"},{"1":"52.2","2":"53","3":"3.6","4":"0.0","5":"105","6":"-33.76344","7":"151.1133","8":"TRUE","9":"20","10":"1","11":"0.000","12":"1","13":"10448718656"},{"1":"52.2","2":"53","3":"5.9","4":"3.3","5":"105","6":"-33.76346","7":"151.1132","8":"TRUE","9":"20","10":"2","11":"2.975","12":"1","13":"10448718656"},{"1":"52.2","2":"83","3":"9.1","4":"5.2","5":"104","6":"-33.76347","7":"151.1132","8":"TRUE","9":"20","10":"3","11":"3.030","12":"1","13":"10448718656"},{"1":"52.6","2":"84","3":"12.2","4":"11.4","5":"105","6":"-33.76349","7":"151.1132","8":"TRUE","9":"20","10":"4","11":"3.050","12":"1","13":"10448718656"},{"1":"52.8","2":"83","3":"15.2","4":"15.2","5":"107","6":"-33.76351","7":"151.1132","8":"TRUE","9":"20","10":"5","11":"3.038","12":"1","13":"10448718656"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -566,14 +598,14 @@ Error message: Not Found (HTTP 404). </code></pre>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="images/request_limits_ugh.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">API Request limits can be a problem when you don’t pay-to-play.</figcaption>
+<figcaption>API Request limits can be a problem when you don’t pay-to-play.</figcaption>
 </figure>
 </div>
 <p>After filtering my activities, I still have to make 308 requests through the API, which means that we’ll have to create a function which knows to stop sending requests for a 15-minute period once we approach that 200 request limit, and once that time has passed can resume with the remaining requests.</p>
 <p>Ideally, this function would be able to work with a request of any number of items, not just my 308. I’ve created something that should work for this task using a modulus operator and a <code>Sys.sleep</code> command. If you’re going to run it yourself, be mindful that this function will take 15 minutes per 180 activities<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>!</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First, create an empty list that will store each request</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>result_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>batches <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(activities) <span class="sc">%/%</span> <span class="dv">180</span>) <span class="sc">+</span> <span class="dv">1</span></span>
@@ -623,8 +655,8 @@ Error message: Not Found (HTTP 404). </code></pre>
 </ul>
 <p>We can also use the activity ‘id’ variable to include some of the aggregated data for each activity.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select aggregated activity variables</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>activity.variables <span class="ot">&lt;-</span> activity.list <span class="sc">%&gt;%</span></span>
@@ -656,8 +688,8 @@ Error message: Not Found (HTTP 404). </code></pre>
 <h2 class="anchored" data-anchor-id="plotting-our-data">Plotting our data</h2>
 <p>First, let’s create a modified version of the dataset to provide some general insights. Now that we have a more accurate version of activity-level training load, we can re-aggregate the data for plotting.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>plotting_data <span class="ot">&lt;-</span> df1 <span class="sc">%&gt;%</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(activity, date, activity_distance, </span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>         average_speed, max_speed, activity_time, </span>
@@ -667,8 +699,8 @@ Error message: Not Found (HTTP 404). </code></pre>
 </div>
 <p>Okay, now let’s create a plot to look at our training load over the years we have data available for. This will allow us to assess our consistency and see trends in our training.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>plotting_data <span class="sc">%&gt;%</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, week) <span class="sc">%&gt;%</span></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">weekly_TRIMP =</span> <span class="fu">sum</span>(TRIMP_session, <span class="at">na.rm =</span> T)) <span class="sc">%&gt;%</span></span>
@@ -688,14 +720,18 @@ Error message: Not Found (HTTP 404). </code></pre>
 <span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> year, <span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">scales =</span> <span class="st">"fixed"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>Well, that’s not great… where’s 2020 and 2022? In my defence, I did run throughout the back half of 2023 but didn’t record these sessions because my Garmin watch broke, and I haven’t gotten around to having it fixed yet. So that’s a good lesson: you can’t analyse or evaluate data that you don’t have!</p>
 <p>Perhaps, it would be more useful to look at the data from 2018 and the start of 2019, where I was somewhat more consistent with my training. First, let’s re-plot the weekly training load data from 2018 and 2019, and then we can look at the average speed of all workouts each week during this time period, too. It might also be fun to use a slightly different ‘geom’ for each plot.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>plot_trimp <span class="ot">&lt;-</span> plotting_data <span class="sc">%&gt;%</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2018</span> <span class="sc">|</span> </span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>           year <span class="sc">==</span> <span class="dv">2019</span>) <span class="sc">%&gt;%</span></span>
@@ -721,12 +757,16 @@ Error message: Not Found (HTTP 404). </code></pre>
 <span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>plot_trimp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>plot_speed <span class="ot">&lt;-</span> plotting_data <span class="sc">%&gt;%</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2018</span> <span class="sc">|</span> </span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>           year <span class="sc">==</span> <span class="dv">2019</span>) <span class="sc">%&gt;%</span></span>
@@ -753,22 +793,30 @@ Error message: Not Found (HTTP 404). </code></pre>
 <span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>plot_speed</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>It looks like there’s a relationship between consistent training and the average weekly speed of workouts. Hmmmm, who would have thought? However, to make this a little bit clearer we can plot these two figures together using the <code>patchwork</code> library.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>combined_plot <span class="ot">&lt;-</span> plot_trimp <span class="sc">+</span> plot_speed <span class="sc">+</span> <span class="fu">plot_layout</span>(<span class="at">ncol =</span> <span class="dv">1</span>)</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>combined_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
 </div>
-<details open="">
-<summary>Code</summary>
+</div>
+<details open="" class="code-fold">
+<summary>Show code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's save this to use as the image for the post! </span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ggsave(combined_plot, file = "images/combined_plot.png",</span></span>
@@ -787,7 +835,7 @@ Error message: Not Found (HTTP 404). </code></pre>
 </section>
 
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-morton1990modeling" class="csl-entry" role="listitem">
 Morton, R Hugh, John R Fitz-Clarke, and Eric W Banister. 1990. <span>“Modeling Human Performance in Running.”</span> <em>Journal of Applied Physiology</em> 69 (3): 1171–77.
 </div>
@@ -803,16 +851,16 @@ Morton, R Hugh, John R Fitz-Clarke, and Eric W Banister. 1990. <span>“Modeling
 <li id="fn7"><p>This can be calculated using the following formula: <span class="math display">\[ ((heart\:rate - resting\:heart\:rate) / (max\:heart\:rate - resting\:heart\:rate)) \]</span><a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn8"><p>This can be calculated using the following formula: <span class="math display">\[ TRIMP = (d.time / 60) * HRR * (0.64e ^{1.92 * HRR} ) \]</span><a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
-</section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{ashton2023,
+</section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{ashton2023,
   author = {Ashton, Luke},
   title = {Analysing {Strava} Data in {R.}},
   date = {2023-12-29},
-  url = {https://luke-ashton.netlify.app/posts/strava-api-analysis},
+  url = {https://luke-ashton.netlify.app/posts/strava-api-analysis/},
   langid = {en}
 }
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-ashton2023" class="csl-entry quarto-appendix-citeas" role="listitem">
 Ashton, Luke. 2023. <span>“Analysing Strava Data in R.”</span> December
-29, 2023. <a href="https://luke-ashton.netlify.app/posts/strava-api-analysis">https://luke-ashton.netlify.app/posts/strava-api-analysis</a>.
+29, 2023. <a href="https://luke-ashton.netlify.app/posts/strava-api-analysis/">https://luke-ashton.netlify.app/posts/strava-api-analysis/</a>.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
@@ -855,6 +903,33 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       } else {
         el.classList.add('notransition');
       }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
     }
   }
   const toggleColorMode = (alternate) => {
@@ -923,13 +998,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return localAlternateSentinel;
     }
   }
-  let localAlternateSentinel = 'default';
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
   // Dark / light mode switch
   window.quartoToggleColorScheme = () => {
     // Read the current dark / light value 
     let toAlternate = !hasAlternateSentinel();
     toggleColorMode(toAlternate);
     setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
   };
   // Ensure there is a toggle, if there isn't float one in the top right
   if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
@@ -964,18 +1041,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -1007,11 +1073,48 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
-  function tippyHover(el, contentFn) {
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/luke-ashton\.netlify\.app");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -1021,8 +1124,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1034,7 +1146,129 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -1078,6 +1312,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -1103,6 +1338,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -1162,9 +1423,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
-<script src="https://giscus.app/client.js" data-repo="Luke-Ashton/blog" data-repo-id="R_kgDOK98liA" data-category="General" data-category-id="" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
+<script src="https://giscus.app/client.js" data-repo="Luke-Ashton/blog" data-repo-id="R_kgDOK98liA" data-category="General" data-category-id="DIC_kwDOK98liM4CcAyc" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
 </script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark">
 </div> <!-- /content -->
+
 
 
 

@@ -2,6 +2,7 @@
   {
     "listing": "/blog.html",
     "items": [
+      "/posts/power_bi_map/index.html",
       "/posts/strava-api-analysis/index.html"
     ]
   }

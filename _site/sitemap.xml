@@ -2,14 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://luke-ashton.netlify.app/posts/strava-api-analysis/index.html</loc>
-    <lastmod>2023-12-30T22:14:52.758Z</lastmod>
-  </url>
-  <url>
-    <loc>https://luke-ashton.netlify.app/blog.html</loc>
-    <lastmod>2023-12-30T22:14:45.141Z</lastmod>
+    <lastmod>2023-12-30T22:07:33.904Z</lastmod>
   </url>
   <url>
     <loc>https://luke-ashton.netlify.app/index.html</loc>
-    <lastmod>2023-12-27T11:36:24.018Z</lastmod>
+    <lastmod>2023-12-27T03:56:23.935Z</lastmod>
+  </url>
+  <url>
+    <loc>https://luke-ashton.netlify.app/blog.html</loc>
+    <lastmod>2023-12-27T03:20:24.071Z</lastmod>
+  </url>
+  <url>
+    <loc>https://luke-ashton.netlify.app/posts/power_bi_map/index.html</loc>
+    <lastmod>2025-11-03T05:58:27.248Z</lastmod>
   </url>
 </urlset>

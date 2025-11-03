@@ -16,3 +16,6 @@ execute:
 ## Testing PowerBI
 
 Boooooo, PowerBI.
+
+
+<!-- <iframe title="Dashboard_playtesting" width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiMzIxMGE4MmItMDM1NS00MmNjLTg4MTUtM2Y0ZTE1YWExODM1IiwidCI6IjM4ZDcxMTYxLWMzOWEtNDY5Yy05ZWQ4LTMyNDBhOTUxOTEzNiJ9" frameborder="0" allowFullScreen="true"></iframe> -->
