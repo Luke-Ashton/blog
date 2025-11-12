@@ -84,6 +84,27 @@
     "text": "Footnotes\n\n\nor perhaps the past few years…↩︎\nThis assumes that you already have a Strava account.↩︎\nI assume this is a requirement intended for the more serious app developers, rather than the hobbyist analysts.↩︎\nIt appears that I have a few cross country ski activities and hikes in here!↩︎\nI’m going to call each library in this tidying step, as we’ll be incorporating this code into a bigger function later on.↩︎\nI use 180 requests instead of 200 to allow for some wiggle room, in case you need to make some changes to your code, or want to make another small request.↩︎\nThis can be calculated using the following formula: \\[ ((heart\\:rate - resting\\:heart\\:rate) / (max\\:heart\\:rate - resting\\:heart\\:rate)) \\]↩︎\nThis can be calculated using the following formula: \\[ TRIMP = (d.time / 60) * HRR * (0.64e ^{1.92 * HRR} ) \\]↩︎"
   },
   {
+    "objectID": "posts/a-new-app/index.html",
+    "href": "posts/a-new-app/index.html",
+    "title": "A new app emerges",
+    "section": "",
+    "text": "Boooooo, PowerBI.\nAlright, that’s been scrapped, and we’ve built a JavaScript + React web application."
+  },
+  {
+    "objectID": "posts/a-new-app/index.html#testing-powerbi",
+    "href": "posts/a-new-app/index.html#testing-powerbi",
+    "title": "A new app emerges",
+    "section": "",
+    "text": "Boooooo, PowerBI.\nAlright, that’s been scrapped, and we’ve built a JavaScript + React web application."
+  },
+  {
+    "objectID": "blog.html",
+    "href": "blog.html",
+    "title": "Blog",
+    "section": "",
+    "text": "A new app emerges\n\n\n\n\n\n\nR is better\n\n\nPowerBI\n\n\nWhy not just use Plotly and Mapboxer\n\n\n\nTesting PowerBI’s mapping capacities\n\n\n\n\n\nNov 3, 2025\n\n\nLuke Ashton\n\n\n\n\n\n\n\n\n\n\n\n\nTesting PowerBI\n\n\n\n\n\n\nR is better\n\n\nPowerBI\n\n\nWhy not just use Plotly and Mapboxer\n\n\n\nTesting PowerBI’s mapping capacities\n\n\n\n\n\nNov 3, 2025\n\n\nLuke Ashton\n\n\n\n\n\n\n\n\n\n\n\n\nAnalysing Strava data in R.\n\n\n\n\n\n\nR\n\n\nData analysis\n\n\nTutorial\n\n\nStrava\n\n\nSports statistics\n\n\n\nA former runner wrangles data through the Strava API.\n\n\n\n\n\nDec 29, 2023\n\n\nLuke Ashton\n\n\n\n\n\n\nNo matching items"
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Luke Ashton",
@@ -98,24 +119,17 @@
     "text": "I’m a PhD student at Macquarie University in Sydney, currently working on research investigating educational inequality in Australia.\nHowever, this blog will largely be a space for me to write about things that I work on in my spare time - and the topics covered will be quite wide-ranging.\nAs the year comes to an end, and I find myself with more time, I am considering my health and fitness more than I have for some time. As a result, some of the first few articles will be based on some health/fitness data."
   },
   {
-    "objectID": "blog.html",
-    "href": "blog.html",
-    "title": "Blog",
-    "section": "",
-    "text": "Testing PowerBI\n\n\n\n\n\n\nR is better\n\n\nPowerBI\n\n\nWhy not just use Plotly and Mapboxer\n\n\n\nTesting PowerBI’s mapping capacities\n\n\n\n\n\nNov 3, 2025\n\n\nLuke Ashton\n\n\n\n\n\n\n\n\n\n\n\n\nAnalysing Strava data in R.\n\n\n\n\n\n\nR\n\n\nData analysis\n\n\nTutorial\n\n\nStrava\n\n\nSports statistics\n\n\n\nA former runner wrangles data through the Strava API.\n\n\n\n\n\nDec 29, 2023\n\n\nLuke Ashton\n\n\n\n\n\n\nNo matching items"
-  },
-  {
     "objectID": "posts/power_bi_map/index.html",
     "href": "posts/power_bi_map/index.html",
     "title": "Testing PowerBI",
     "section": "",
-    "text": "Boooooo, PowerBI."
+    "text": "Boooooo, PowerBI.\nAlright, that’s been scrapped, and we’ve built a JavaScript + React web application."
   },
   {
     "objectID": "posts/power_bi_map/index.html#testing-powerbi",
     "href": "posts/power_bi_map/index.html#testing-powerbi",
     "title": "Testing PowerBI",
     "section": "",
-    "text": "Boooooo, PowerBI."
+    "text": "Boooooo, PowerBI.\nAlright, that’s been scrapped, and we’ve built a JavaScript + React web application."
   }
 ]

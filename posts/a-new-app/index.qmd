@@ -1,5 +1,5 @@
 ---
-title: "Testing PowerBI"
+title: "A new app emerges"
 date: "2025-11-03"
 image: images/thumbnail.png
 categories:
