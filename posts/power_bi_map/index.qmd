@@ -11,6 +11,9 @@ google-scholar: true
 citation: true
 execute: 
   warning: false
+format:
+  html:
+    embed-resources: true
 ---
 
 ## Testing PowerBI
